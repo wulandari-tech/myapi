@@ -4,156 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WANZOFC TECH - Profil Saya</title>
+    <link rel="stylesheet" href="css/global-animations.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: #0f0f1f; /* Warna latar sedikit berbeda dari dashboard */
-            color: #e0e0e0;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0;
+            background-color: #0f0f1f; color: #e0e0e0; line-height: 1.6;
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x:hidden;
         }
         .navbar {
-            background-color: #1a1a2f; /* Warna navbar sedikit berbeda */
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #2a2a4a;
+            background-color: #1a1a2f; padding: 1rem 2rem; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2a4a;
         }
-        .navbar .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #58a6ff; /* Warna logo disesuaikan */
-            text-decoration: none;
-        }
+        .navbar .logo { font-size: 1.8rem; font-weight: bold; color: #58a6ff; text-decoration: none; }
         .navbar .nav-links a {
-            color: #c0c0c0;
-            text-decoration: none;
-            margin-left: 1.5rem;
-            font-size: 1rem;
-            transition: color 0.3s ease;
+            color: #c0c0c0; text-decoration: none; margin-left: 1.5rem;
+            font-size: 1rem; transition: color 0.3s ease;
         }
-        .navbar .nav-links a:hover, .navbar .nav-links a.active {
-            color: #58a6ff;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            flex-grow: 1;
-        }
+        .navbar .nav-links a:hover, .navbar .nav-links a.active { color: #58a6ff; }
+        .container { max-width: 900px; margin: 40px auto; padding: 20px; flex-grow: 1; }
         .profile-card {
-            background-color: #1a1a2f;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            background-color: #1a1a2f; padding: 30px 40px; border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); border: 1px solid #2a2a4a;
         }
-        .profile-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .profile-header h1 {
-            font-size: 2.5rem;
-            color: #ffffff;
-            margin-bottom: 5px;
-        }
-        .profile-header p {
-            font-size: 1.1rem;
-            color: #b0b0b0;
-        }
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .profile-header h1 { font-size: 2.5rem; color: #ffffff; margin-bottom: 5px; }
+        .profile-header p { font-size: 1.1rem; color: #b0b0b0; }
         .profile-details .detail-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #2a2a4a;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 0; border-bottom: 1px solid #2a2a4a; flex-wrap: wrap;
         }
-        .profile-details .detail-item:last-child {
-            border-bottom: none;
-        }
+        .profile-details .detail-item:last-child { border-bottom: none; }
         .detail-item .label {
-            font-weight: 600;
-            color: #c0c0c0;
-            font-size: 1.05rem;
+            font-weight: 600; color: #c0c0c0; font-size: 1.05rem;
+            margin-right: 15px; min-width: 220px;
         }
         .detail-item .value {
-            font-size: 1rem;
-            color: #e0e0e0;
-            display: flex;
-            align-items: center;
+            font-size: 1rem; color: #e0e0e0; display: flex;
+            align-items: center; flex-grow: 1; word-break: break-all;
         }
-        .detail-item .value input[readonly] {
-            background: transparent;
-            border: none;
-            color: #58a6ff;
-            font-family: 'Monaco', monospace;
-            font-size: 1rem;
-            padding: 5px 0;
-            width: auto; /* Disesuaikan agar tidak terlalu panjang */
-            max-width: 300px; /* Batasi lebar agar tidak overflow */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .detail-item .value input[type="text"] {
+            background: transparent; border: 1px solid #3a3a5a; color: #58a6ff;
+            font-family: 'Monaco', monospace; font-size: 1rem; padding: 8px 10px;
+            border-radius: 4px; width: auto; min-width: 250px; max-width: 100%;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
+        .detail-item .value input[type="text"]:focus {
+            outline: none; border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+        .detail-item .value input[readonly] { border: none; padding-left:0; box-shadow: none !important;}
         .detail-item .value .plan-badge {
-            background-color: #58a6ff;
-            color: #1a1a2f;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+            background-color: #58a6ff; color: #1a1a2f; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.9rem; font-weight: bold;
         }
         .action-buttons {
-            margin-top: 30px;
-            text-align: center;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
+            margin-top: 30px; text-align: center; display: flex;
+            gap: 15px; justify-content: center; flex-wrap: wrap;
         }
         .action-buttons .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            border: none;
-            cursor: pointer;
+            padding: 10px 20px; border-radius: 6px; text-decoration: none;
+            font-weight: 600; font-size: 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            border: none; cursor: pointer;
         }
-        .action-buttons .btn-primary {
-            background-color: #58a6ff;
-            color: #1a1a2f;
-        }
-        .action-buttons .btn-primary:hover {
-            background-color: #388bfd;
-        }
-        .action-buttons .btn-secondary {
-            background-color: #303049;
-            color: #c0c0c0;
-        }
-        .action-buttons .btn-secondary:hover {
-            background-color: #40405f;
-        }
+        .action-buttons .btn:hover { transform: translateY(-2px); }
+        .action-buttons .btn-primary { background-color: #58a6ff; color: #1a1a2f; }
+        .action-buttons .btn-primary:hover { background-color: #388bfd; }
+        .action-buttons .btn-secondary { background-color: #303049; color: #c0c0c0; }
+        .action-buttons .btn-secondary:hover { background-color: #40405f; }
         .copy-btn-small {
             background: none; border: none; color: #888; cursor: pointer;
             font-size: 15px; display: inline-flex; align-items: center;
-            justify-content: center; width: 20px; height: 20px;
-            margin-left: 10px; padding:0;
+            justify-content: center; width: 24px; height: 24px;
+            margin-left: 10px; padding:0; transition: color 0.2s, transform 0.2s;
         }
-        .copy-btn-small:hover { color: #58a6ff; }
-        .copy-btn-small svg { width: 14px; height: 14px; fill: currentColor; }
+        .copy-btn-small:hover { color: #58a6ff; transform: scale(1.1); }
+        .copy-btn-small svg { width: 16px; height: 16px; fill: currentColor; }
         .auth-message-profile { text-align: center; font-size: 1.2rem; color: #ffc107; padding: 20px; background-color: #332701; border-radius: 8px; margin: 50px auto; max-width: 600px;}
         .auth-message-profile a { color: #58a6ff; text-decoration: underline;}
         .footer {
-            background-color: #050515;
-            color: #a0a0a0;
-            text-align: center;
-            padding: 30px 20px;
-            border-top: 1px solid #1a1a2a;
-            margin-top: auto; /* Mendorong footer ke bawah */
+            background-color: #050515; color: #a0a0a0; text-align: center;
+            padding: 30px 20px; border-top: 1px solid #1a1a2a; margin-top: auto;
         }
         .message { margin-bottom: 15px; padding: 10px; border-radius: 5px; font-size: 0.9rem; text-align: center; }
         .message.error { background-color: #ff4d4d; color: white; }
@@ -161,36 +91,48 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
+    <nav class="navbar animate-on-scroll" data-gsap-delay="0.1">
         <a href="index.html" class="logo">WANZOFC TECH</a>
         <div class="nav-links">
             <a href="dashboard.html">Dashboard</a>
             <a href="pricing.html">Harga</a>
-            <a href="#" id="logoutNav" style="display:none;">Logout</a>
-            <a href="login.html" id="loginNav">Login</a>
+            <a href="#" id="logoutNavProfile" style="display:none;">Logout</a>
+            <a href="login.html" id="loginNavProfile">Login</a>
         </div>
     </nav>
 
     <div class="container">
-        <div id="authMessageContainerProfile" style="display:none;">
+        <div id="authMessageContainerProfile" style="display:none;" class="animate-on-scroll" data-gsap-delay="0.2">
             <p class="auth-message-profile">
                 Anda harus <a href="login.html">login</a> untuk melihat halaman profil.
             </p>
         </div>
 
-        <div class="profile-card" id="profileContent" style="display:none;">
+        <div class="profile-card animate-on-scroll" id="profileContent" style="display:none;" data-gsap-delay="0.2">
             <div class="profile-header">
-                <h1 id="profileUsername">Nama Pengguna</h1>
-                <p id="profileEmail">email@example.com</p>
+                <h1 id="profileUsername" class="animate-on-scroll" data-gsap-y-from="20" data-gsap-delay="0.3">Nama Pengguna</h1>
+                <p id="profileEmail" class="animate-on-scroll" data-gsap-delay="0.4">email@example.com</p>
             </div>
              <div id="message-area-profile" class="message" style="display: none;"></div>
-            <div class="profile-details">
+            <div class="profile-details stagger-children-on-scroll" data-gsap-stagger="0.07" data-gsap-delay="0.5" data-gsap-y-from="15">
                 <div class="detail-item">
-                    <span class="label">API Key:</span>
+                    <span class="label">API Key Default:</span>
                     <span class="value">
-                        <input type="text" id="profileApiKey" value="Memuat..." readonly>
-                        <button class="copy-btn-small" id="copyProfileApiKeyBtn" title="Salin API Key">
+                        <input type="text" id="profileApiKeyDefault" value="Memuat..." readonly>
+                        <button class="copy-btn-small" id="copyProfileApiKeyDefaultBtn" title="Salin API Key Default">
                             <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                        </button>
+                    </span>
+                </div>
+                <div class="detail-item" id="customApiKeyProfileRow" style="display:none;">
+                    <span class="label">Custom API Key:</span>
+                    <span class="value">
+                        <input type="text" id="profileCustomApiKey" placeholder="Atur API Key Custom Anda">
+                        <button class="copy-btn-small" id="copyProfileCustomApiKeyBtn" title="Salin Custom API Key" style="display:none;">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                        </button>
+                         <button class="copy-btn-small" id="saveProfileCustomApiKeyBtn" title="Simpan Custom API Key">
+                           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3M19 19H5V5H16.17L19 7.83V19M12 12C10.34 12 9 13.34 9 15S10.34 18 12 18 15 16.66 15 15 13.66 12 12 12M6 6H15V10H6V6Z"/></svg>
                         </button>
                     </span>
                 </div>
@@ -199,6 +141,10 @@
                     <span class="value">
                         <span id="profilePlan" class="plan-badge">Memuat...</span>
                     </span>
+                </div>
+                <div class="detail-item" id="planExpirationProfileRow" style="display:none;">
+                    <span class="label">Plan Berakhir Tanggal:</span>
+                    <span class="value" id="profilePlanExpiration">Memuat...</span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Limit Request Harian:</span>
@@ -213,18 +159,20 @@
                     <span class="value" id="profileJoinedDate">Memuat...</span>
                 </div>
             </div>
-            <div class="action-buttons">
-                <button id="regenerateApiKeyProfileBtn" class="btn btn-secondary">Regenerate API Key</button>
-                <a href="pricing.html" class="btn btn-primary">Upgrade Plan</a>
-                <!-- Tambahkan tombol untuk ubah password atau data lain jika perlu -->
+            <div class="action-buttons stagger-children-on-scroll" data-gsap-stagger="0.1" data-gsap-delay="0.6" data-gsap-y-from="15">
+                <button id="regenerateApiKeyProfileBtn" class="btn btn-secondary">Regenerate API Key Default</button>
+                <a href="pricing.html" class="btn btn-primary">Upgrade/Perpanjang Plan</a>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
+    <footer class="footer animate-on-scroll" data-gsap-y-from="20" data-gsap-delay="0.7">
         <p>© <span id="year"></span> WANZOFC TECH. All Rights Reserved.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="js/global-animations.js"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
         const profileContent = document.getElementById('profileContent');
@@ -233,19 +181,33 @@
 
         const profileUsernameEl = document.getElementById('profileUsername');
         const profileEmailEl = document.getElementById('profileEmail');
-        const profileApiKeyEl = document.getElementById('profileApiKey');
+        const profileApiKeyDefaultEl = document.getElementById('profileApiKeyDefault');
+        const customApiKeyProfileRowEl = document.getElementById('customApiKeyProfileRow');
+        const profileCustomApiKeyEl = document.getElementById('profileCustomApiKey');
+        const copyProfileCustomApiKeyBtnEl = document.getElementById('copyProfileCustomApiKeyBtn');
+        const saveProfileCustomApiKeyBtnEl = document.getElementById('saveProfileCustomApiKeyBtn');
+
         const profilePlanEl = document.getElementById('profilePlan');
+        const planExpirationProfileRowEl = document.getElementById('planExpirationProfileRow');
+        const profilePlanExpirationEl = document.getElementById('profilePlanExpiration');
         const profileApiLimitEl = document.getElementById('profileApiLimit');
         const profileRequestsLeftEl = document.getElementById('profileRequestsLeft');
         const profileJoinedDateEl = document.getElementById('profileJoinedDate');
-        const logoutNav = document.getElementById('logoutNav');
-        const loginNav = document.getElementById('loginNav');
+        
+        const logoutNavProfile = document.getElementById('logoutNavProfile');
+        const loginNavProfile = document.getElementById('loginNavProfile');
+        let currentUserProfileData = null;
 
         function showMessageProfile(message, type = 'error') {
             messageAreaProfile.textContent = message;
             messageAreaProfile.className = `message ${type}`;
             messageAreaProfile.style.display = 'block';
-            setTimeout(() => { messageAreaProfile.style.display = 'none'; }, 3000);
+            gsap.fromTo(messageAreaProfile, {opacity:0, y:-10}, {opacity:1, y:0, duration:0.3});
+            setTimeout(() => { 
+                gsap.to(messageAreaProfile, {opacity:0, y:-10, duration:0.3, onComplete: () => {
+                    messageAreaProfile.style.display = 'none';
+                }});
+            }, 3000);
         }
 
         async function loadUserProfile() {
@@ -253,96 +215,139 @@
             if (!token) {
                 authMessageContainerProfile.style.display = 'block';
                 profileContent.style.display = 'none';
-                loginNav.style.display = 'inline';
-                logoutNav.style.display = 'none';
+                loginNavProfile.style.display = 'inline';
+                logoutNavProfile.style.display = 'none';
                 return;
             }
 
-            loginNav.style.display = 'none';
-            logoutNav.style.display = 'inline';
-            logoutNav.addEventListener('click', (e) => {
+            loginNavProfile.style.display = 'none';
+            logoutNavProfile.style.display = 'inline';
+            logoutNavProfile.addEventListener('click', (e) => {
                 e.preventDefault();
-                localStorage.removeItem('wanzofcToken');
-                localStorage.removeItem('wanzofcUser');
+                localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
                 window.location.href = 'index.html';
             });
 
             try {
-                const response = await fetch('/api/user/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
 
                 if (data.success && data.user) {
                     const user = data.user;
+                    currentUserProfileData = user;
                     profileUsernameEl.textContent = user.username;
                     profileEmailEl.textContent = user.email;
-                    profileApiKeyEl.value = user.apiKey;
+                    profileApiKeyDefaultEl.value = user.apiKey;
+                    
+                    if (user.plan !== 'Free' && user.planExpirationDate && new Date(user.planExpirationDate) > new Date()) {
+                        customApiKeyProfileRowEl.style.display = 'flex';
+                        if (user.customApiKey) {
+                            profileCustomApiKeyEl.value = user.customApiKey;
+                            copyProfileCustomApiKeyBtnEl.style.display = 'inline-flex';
+                        } else {
+                            profileCustomApiKeyEl.placeholder = "Atur API Key Custom Anda";
+                            copyProfileCustomApiKeyBtnEl.style.display = 'none';
+                        }
+                        planExpirationProfileRowEl.style.display = 'flex';
+                        const expDate = new Date(user.planExpirationDate);
+                        profilePlanExpirationEl.textContent = expDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' });
+
+                    } else {
+                        customApiKeyProfileRowEl.style.display = 'none';
+                        planExpirationProfileRowEl.style.display = 'none';
+                         if (user.plan !== 'Free' && user.planExpirationDate && new Date(user.planExpirationDate) <= new Date()){
+                             profilePlanExpirationEl.textContent = 'Telah Berakhir - Silakan Perpanjang';
+                             planExpirationProfileRowEl.style.display = 'flex';
+                         }
+                    }
+
                     profilePlanEl.textContent = user.plan;
                     profileApiLimitEl.textContent = user.apiLimit;
                     const requestsLeft = user.apiLimit - user.requestsToday;
                     profileRequestsLeftEl.textContent = `${requestsLeft < 0 ? 0 : requestsLeft}`;
-                    profileJoinedDateEl.textContent = new Date(user.createdAt).toLocaleDateString('id-ID', {
-                        year: 'numeric', month: 'long', day: 'numeric'
-                    });
+                    profileJoinedDateEl.textContent = new Date(user.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
                     
                     profileContent.style.display = 'block';
                     authMessageContainerProfile.style.display = 'none';
+                    gsap.fromTo(profileContent, {opacity:0, y:30}, {opacity:1, y:0, duration:0.6, ease:"power2.out"});
+
                 } else {
-                    localStorage.removeItem('wanzofcToken');
-                    localStorage.removeItem('wanzofcUser');
+                    localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
                     authMessageContainerProfile.style.display = 'block';
                     profileContent.style.display = 'none';
-                    loginNav.style.display = 'inline';
-                    logoutNav.style.display = 'none';
+                    loginNavProfile.style.display = 'inline'; logoutNavProfile.style.display = 'none';
                 }
             } catch (error) {
-                console.error("Error loading profile:", error);
                 authMessageContainerProfile.innerHTML = '<p class="auth-message-profile">Gagal memuat profil. Coba lagi nanti.</p>';
-                authMessageContainerProfile.style.display = 'block';
-                profileContent.style.display = 'none';
-                loginNav.style.display = 'inline';
-                logoutNav.style.display = 'none';
+                authMessageContainerProfile.style.display = 'block'; profileContent.style.display = 'none';
+                loginNavProfile.style.display = 'inline'; logoutNavProfile.style.display = 'none';
             }
         }
-
-        document.getElementById('copyProfileApiKeyBtn').addEventListener('click', () => {
-            profileApiKeyEl.select();
-            profileApiKeyEl.setSelectionRange(0, 99999);
-            try {
-                document.execCommand('copy');
-                showMessageProfile('API Key berhasil disalin!', 'success');
-            } catch (err) {
-                showMessageProfile('Gagal menyalin API Key.', 'error');
-            }
-            window.getSelection().removeAllRanges();
-        });
         
-        document.getElementById('regenerateApiKeyProfileBtn').addEventListener('click', async () => {
-            if (!confirm('Apakah Anda yakin ingin membuat API Key baru? API Key lama akan tidak berlaku.')) {
-                return;
-            }
-            const token = localStorage.getItem('wanzofcToken');
-            if (!token) return;
+        function copyToClipboardProfile(inputElement, typeName) {
+            inputElement.select(); inputElement.setSelectionRange(0, 99999);
+            try { document.execCommand('copy'); showMessageProfile(`${typeName} berhasil disalin!`, 'success'); } 
+            catch (err) { showMessageProfile(`Gagal menyalin ${typeName}.`, 'error'); }
+            window.getSelection().removeAllRanges();
+        }
 
+        document.getElementById('copyProfileApiKeyDefaultBtn').addEventListener('click', () => {
+            copyToClipboardProfile(profileApiKeyDefaultEl, 'API Key Default');
+        });
+        if(copyProfileCustomApiKeyBtnEl){
+            copyProfileCustomApiKeyBtnEl.addEventListener('click', () => {
+                if(profileCustomApiKeyEl.value) { copyToClipboardProfile(profileCustomApiKeyEl, 'Custom API Key'); } 
+                else { showMessageProfile('Custom API Key belum diatur.', 'error'); }
+            });
+        }
+        
+        if(saveProfileCustomApiKeyBtnEl){
+            saveProfileCustomApiKeyBtnEl.addEventListener('click', async () => {
+                const token = localStorage.getItem('wanzofcToken'); if (!token) return;
+                const customKey = profileCustomApiKeyEl.value.trim();
+
+                if (!customKey && currentUserProfileData && currentUserProfileData.customApiKey) {
+                     if(!confirm("Yakin ingin menghapus Custom API Key? API Key Default akan digunakan.")) return;
+                } else if (!customKey && !(currentUserProfileData && currentUserProfileData.customApiKey)) {
+                    showMessageProfile('Custom API Key tidak boleh kosong untuk diatur.', 'error'); return;
+                }
+                
+                try {
+                    const response = await fetch('/api/user/set-custom-apikey', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ customKey: customKey || null })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        profileCustomApiKeyEl.value = data.customApiKey || '';
+                        copyProfileCustomApiKeyBtnEl.style.display = data.customApiKey ? 'inline-flex' : 'none';
+                        if (currentUserProfileData) {
+                            currentUserProfileData.customApiKey = data.customApiKey;
+                            localStorage.setItem('wanzofcUser', JSON.stringify(currentUserProfileData));
+                        }
+                        showMessageProfile(data.customApiKey ? 'Custom API Key berhasil disimpan!' : 'Custom API Key berhasil dihapus!', 'success');
+                    } else { showMessageProfile(data.message || 'Gagal menyimpan Custom API Key.', 'error'); }
+                } catch (error) { showMessageProfile('Error: Gagal menyimpan Custom API Key.', 'error'); }
+            });
+        }
+
+        document.getElementById('regenerateApiKeyProfileBtn').addEventListener('click', async () => {
+            if (!confirm('Yakin ingin membuat API Key default baru? API Key default lama akan tidak berlaku jika belum ada Custom API Key.')) return;
+            const token = localStorage.getItem('wanzofcToken'); if (!token) return;
             try {
-                const response = await fetch('/api/user/regenerate-apikey', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/user/regenerate-apikey', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
                 if (data.success) {
-                    profileApiKeyEl.value = data.apiKey;
-                    localStorage.setItem('wanzofcUser', JSON.stringify({...JSON.parse(localStorage.getItem('wanzofcUser')), apiKey: data.apiKey}));
-                    showMessageProfile('API Key berhasil diperbarui!', 'success');
-                } else {
-                    showMessageProfile(data.message || 'Gagal memperbarui API Key.', 'error');
-                }
-            } catch (error) {
-                showMessageProfile('Error: Gagal memperbarui API Key.', 'error');
-            }
+                    profileApiKeyDefaultEl.value = data.apiKey;
+                    if(currentUserProfileData){
+                        currentUserProfileData.apiKey = data.apiKey;
+                        localStorage.setItem('wanzofcUser', JSON.stringify(currentUserProfileData));
+                    }
+                    showMessageProfile('API Key Default berhasil diperbarui!', 'success');
+                } else { showMessageProfile(data.message || 'Gagal memperbarui API Key Default.', 'error'); }
+            } catch (error) { showMessageProfile('Error: Gagal memperbarui API Key Default.', 'error'); }
         });
-
 
         document.addEventListener('DOMContentLoaded', loadUserProfile);
     </script>

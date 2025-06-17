@@ -1,22 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WANZOFC TECH - Login</title>
+    <link rel="stylesheet" href="css/global-animations.css">
     <style>
         body {
             font-family: 'Open Sans', sans-serif; margin: 0; background-color: #1e1e2f; color: #fff;
             display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+            overflow-x: hidden;
         }
         .login-container {
             background-color: #2a2a3f; padding: 40px 30px; border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center;
-            position: relative; /* Untuk positioning animasi */
+            position: relative;
         }
-        .login-container .logo {
-            font-size: 2rem; font-weight: bold; color: #4e8cff; margin-bottom: 25px;
-            text-decoration: none; display: block;
+        .login-container .logo-link {
+            display: block; text-decoration: none;
+        }
+        .login-container .logo-text {
+            font-size: 2rem; font-weight: bold; color: #4e8cff; margin-bottom: 10px;
+             display: block;
         }
         .login-container h2 { margin-bottom: 25px; font-size: 1.8rem; color: #f0f0f0; }
         .form-group { margin-bottom: 20px; text-align: left; }
@@ -24,16 +30,16 @@
         .form-group input {
             width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #444;
             background-color: #1e1e2f; color: #fff; font-size: 1rem; box-sizing: border-box;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .form-group input:focus { outline: none; border-color: #4e8cff; }
+        .form-group input:focus { outline: none; border-color: #4e8cff; box-shadow: 0 0 0 3px rgba(78, 140, 255, 0.3); }
         .login-button {
             width: 100%; padding: 14px; background-color: #4e8cff; color: #fff; border: none;
             border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .login-button:hover { background-color: #3a75e0; }
-        .login-button:disabled { background-color: #555; cursor: not-allowed; }
+        .login-button:hover { background-color: #3a75e0; transform: translateY(-2px); }
+        .login-button:disabled { background-color: #555; cursor: not-allowed; transform: none; }
         .extra-links { margin-top: 25px; font-size: 0.9rem; }
         .extra-links a { color: #4e8cff; text-decoration: none; transition: color 0.3s ease; }
         .extra-links a:hover { text-decoration: underline; color: #6fa4ff; }
@@ -42,27 +48,36 @@
         .message.error { background-color: #ff4d4d; color: white; }
         .message.success { background-color: #4CAF50; color: white; }
         footer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #777; }
-        #passwordAnimationContainer { /* Style untuk animasi */
-            position: absolute; 
-            top: -170px; /* Sesuaikan agar pas di atas heading, tergantung tinggi animasi */
-            left: 50%; 
-            transform: translateX(-50%); 
-            z-index: 10; 
-            display: none;
-            width:130px;
-            height:160px;
+        #techAnimationPlaceholder {
+             width:100px; height:80px;
+             margin: 0 auto 15px auto;
+        }
+        .logo-svg-animated path, .logo-svg-animated circle {
+            transform-origin: center center;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div id="passwordAnimationContainer">
-             <div><a href="http://permathic.blogspot.co.id/" target="_blank"><img border="0" src="http://s.myniceprofile.com/myspacepic/656/th/65649.gif" title="My widget" alt="animasi bergerak gif" /></a><small><center><a href="http://permathic.blogspot.com/2012/04/kumpulan-widget-animasi-yang-lucu-dan.html" target="_blank" title="WANZOFC NARUTO">My Widget</a></center></small></div>
+    <div class="login-container animate-on-scroll" data-gsap-duration="0.7" data-gsap-scale-from="0.9">
+        <div id="techAnimationPlaceholder" class="animate-on-scroll" data-gsap-delay="0.1">
+            <svg class="logo-svg-animated" viewBox="0 0 100 100" width="100%" height="100%">
+                <defs>
+                    <linearGradient id="gradLogin" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4e8cff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2a60c0;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="40" fill="url(#gradLogin)" class="logo-circle-anim"/>
+                <path d="M30 60 L40 40 L50 70 L60 30 L70 60" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="logo-path-anim"/>
+                <circle cx="50" cy="50" r="8" fill="#1e1e2f" class="logo-center-dot-anim"/>
+            </svg>
         </div>
-        <a href="/" class="logo">WANZOFC TECH</a>
-        <h2>Selamat Datang Kembali!</h2>
+        <a href="/" class="logo-link">
+            <span class="logo-text animate-on-scroll" data-gsap-delay="0.2" data-gsap-y-from="20">WANZOFC TECH</span>
+        </a>
+        <h2 class="animate-on-scroll" data-gsap-delay="0.3" data-gsap-y-from="20">Selamat Datang Kembali!</h2>
         <div id="message-area" class="message" style="display: none;"></div>
-        <form id="loginForm">
+        <form id="loginForm" class="stagger-children-on-scroll" data-gsap-stagger="0.1" data-gsap-delay="0.4" data-gsap-y-from="15">
             <div class="form-group">
                 <label for="emailOrUsername">Email atau Username</label>
                 <input type="text" id="emailOrUsername" name="emailOrUsername" required>
@@ -71,44 +86,43 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="login-button" id="loginButton">Login</button>
+            <button type="submit" class="login-button button-primary-animated" id="loginButton">Login</button>
         </form>
-        <div class="extra-links">
-            <a href="#">Lupa Password?</a>
+        <div class="extra-links animate-on-scroll" data-gsap-delay="0.5" data-gsap-y-from="10">
+            <a href="#" id="forgotPasswordLink">Lupa Password?</a>
             <span>|</span>
             <a href="/register">Buat Akun Baru</a>
         </div>
     </div>
-    <footer>© <span id="year"></span> WANZOFC TECH</footer>
+    <footer class="animate-on-scroll" data-gsap-delay="0.6" data-gsap-y-from="10">© <span id="year"></span> WANZOFC TECH</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="js/global-animations.js"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
         const loginForm = document.getElementById('loginForm');
         const loginButton = document.getElementById('loginButton');
         const messageArea = document.getElementById('message-area');
-        const passwordInputLogin = document.getElementById('password');
-        const animationContainerLogin = document.getElementById('passwordAnimationContainer');
-        let animationTimeoutLogin;
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
 
-        if (passwordInputLogin && animationContainerLogin) {
-            passwordInputLogin.addEventListener('input', () => {
-                animationContainerLogin.style.display = 'block';
-                clearTimeout(animationTimeoutLogin);
-                animationTimeoutLogin = setTimeout(() => {
-                    animationContainerLogin.style.display = 'none';
-                }, 2000);
-            });
-            passwordInputLogin.addEventListener('blur', () => {
-                clearTimeout(animationTimeoutLogin);
-                animationContainerLogin.style.display = 'none';
-            });
+        if (document.querySelector('.logo-svg-animated')) {
+            const tl = gsap.timeline({delay:0.3});
+            tl.from(".logo-circle-anim", {scale:0, duration:0.8, ease:"elastic.out(1, 0.7)"})
+              .fromTo(".logo-path-anim", {strokeDasharray: 200, strokeDashoffset: 200}, {strokeDashoffset: 0, duration: 1.5, ease:"power2.inOut"}, "-=0.3")
+              .from(".logo-center-dot-anim", {scale:0, duration:0.5, ease:"back.out(2)"}, "-=0.5");
         }
+
+        forgotPasswordLink.addEventListener('click', function(e){
+            e.preventDefault();
+            alert("Fitur Lupa Password belum diimplementasikan sepenuhnya.");
+        });
 
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             loginButton.disabled = true;
             loginButton.textContent = 'Memproses...';
             messageArea.style.display = 'none';
-            animationContainerLogin.style.display = 'none';
 
             const emailOrUsername = document.getElementById('emailOrUsername').value;
             const password = document.getElementById('password').value;
@@ -116,35 +130,39 @@
             try {
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json', },
                     body: JSON.stringify({ emailOrUsername, password }),
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     localStorage.setItem('wanzofcToken', data.token);
                     localStorage.setItem('wanzofcUser', JSON.stringify(data.user));
                     messageArea.textContent = 'Login berhasil! Mengarahkan ke dashboard...';
                     messageArea.className = 'message success';
                     messageArea.style.display = 'block';
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1500);
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+                    const plan = urlParams.get('plan');
+                    if (redirectUrl) {
+                        let destination = redirectUrl;
+                        if (plan) { destination += `?autoSelectPlan=${plan}`; }
+                        setTimeout(() => { window.location.href = destination; }, 1500);
+                    } else {
+                        setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+                    }
                 } else {
                     messageArea.textContent = data.message || 'Login gagal. Periksa kembali input Anda.';
                     messageArea.className = 'message error';
                     messageArea.style.display = 'block';
+                    gsap.fromTo(messageArea, {opacity:0, y:-10}, {opacity:1, y:0, duration:0.3});
                     loginButton.disabled = false;
                     loginButton.textContent = 'Login';
                 }
             } catch (error) {
-                console.error('Error:', error);
                 messageArea.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
                 messageArea.className = 'message error';
                 messageArea.style.display = 'block';
+                gsap.fromTo(messageArea, {opacity:0, y:-10}, {opacity:1, y:0, duration:0.3});
                 loginButton.disabled = false;
                 loginButton.textContent = 'Login';
             }

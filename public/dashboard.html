@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WANZOFC TECH - Dashboard</title>
+    <link rel="stylesheet" href="css/global-animations.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -21,12 +23,13 @@
             display: flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none;
             font-size: 20px; transition: all 0.2s ease; cursor: pointer;
         }
-        .profile-icon-trigger:hover { background: #333; }
+        .profile-icon-trigger:hover { background: #333; transform: scale(1.05); }
         .profile-icon-trigger svg { width: 22px; height: 22px; fill: currentColor; }
         .profile-dropdown-menu {
             display: none; position: absolute; right: 0; top: 100%; background-color: #1c1c1c;
             min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3); z-index: 100;
             border-radius: 8px; border: 1px solid #444; margin-top: 10px; overflow: hidden;
+            transform-origin: top right;
         }
         .profile-dropdown-menu .dropdown-item {
             color: #e0e0e0; padding: 12px 18px; text-decoration: none; display: block;
@@ -34,10 +37,10 @@
         }
         .profile-dropdown-menu .dropdown-item:hover { background-color: #007bff; color: #ffffff; }
         .profile-dropdown-menu .dropdown-item:not(:last-child) { border-bottom: 1px solid #333; }
-        .profile-dropdown-menu.show { display: block; }
+        .profile-dropdown-menu.show { display: block; } /* JS akan menambah/menghapus ini */
         .auth-message { text-align: center; font-size: 1.2rem; color: #ffc107; padding: 20px; background-color: #332701; border-radius: 8px; margin-top: 50px;}
         .auth-message a { color: #00aaff; text-decoration: underline;}
-        .main-title { font-size: 50px; font-weight: 800; text-align: center; margin-bottom: 10px; color: #ffffff; letter-spacing: -1.5px; }
+        .main-title { font-size: clamp(2.5rem, 5vw, 3.2rem); font-weight: 800; text-align: center; margin-bottom: 10px; color: #ffffff; letter-spacing: -1.5px; }
         .greeting {text-align: center; font-size: 1.2rem; color: #aaa; margin-bottom:15px;}
         .subtitle { text-align: center; font-size: 18px; color: #888888; margin-bottom: 50px; font-weight: 400; }
         .api-info-container { background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 30px; margin-bottom: 30px; }
@@ -45,51 +48,66 @@
         .api-info-row:last-child { margin-bottom: 0; }
         .api-info-icon { width: 22px; height: 22px; margin-right: 14px; font-size: 18px; display: flex; align-items: center; justify-content: center; }
         .apikey-info-icon { color: #ffc107; }
-        .apikey-info-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 10px; }
+        .apikey-info-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 10px; min-width: 160px; }
         .apikey-info-value-container { flex: 1; position: relative; }
         .apikey-input {
             width: 100%; background: #1a1a1a; border: 1px solid #333333; border-radius: 8px;
             padding: 14px 70px 14px 18px; color: #ffc107; font-family: 'Monaco', monospace;
             font-size: 15px; outline: none; word-break: break-all; overflow-wrap: break-word;
+            transition: box-shadow 0.3s ease;
         }
+        .apikey-input:focus { box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3); }
         .action-btn-group { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px;}
         .action-btn {
             background: none; border: none; color: #888; cursor: pointer; font-size: 15px;
             display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
-            padding: 0; transition: color 0.2s;
+            padding: 0; transition: color 0.2s, transform 0.2s;
         }
-        .action-btn:hover { color: #ffffff; }
+        .action-btn:hover { color: #ffffff; transform: scale(1.1); }
         .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .base-url-icon { color: #007bff; }
-        .base-url-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 18px; }
+        .base-url-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 18px; min-width: 160px;}
         .base-url-container { flex: 1; position: relative; }
         .base-url-input {
             width: 100%; background: #1a1a1a; border: 1px solid #333333; border-radius: 8px;
             padding: 14px 45px 14px 18px; color: #00ff88; font-family: 'Monaco', monospace;
             font-size: 15px; outline: none; word-break: break-all; overflow-wrap: break-word;
+            transition: box-shadow 0.3s ease;
         }
+        .base-url-input:focus { box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.3); }
         .copy-btn {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none;
             border: none; color: #666; cursor: pointer; font-size: 15px; display: flex;
             align-items: center; justify-content: center; width: 20px; height: 20px;
+            transition: color 0.2s, transform 0.2s;
         }
-        .copy-btn:hover { color: #ffffff; }
+        .copy-btn:hover { color: #ffffff; transform: scale(1.1); }
         .copy-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .plan-info-value, .requests-info-value, .expiration-info-value {
+            padding: 6px 12px; border-radius: 5px; font-weight: 500; font-size: 0.95rem;
+        }
+        .plan-info-value { background-color: #8a2be2; color:white; }
+        .requests-info-value { background-color: #00ff88; color:black; }
+        .expiration-info-value { background-color: #fd7e14; color:black; }
+
         .feature-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 50px; flex-wrap: wrap; }
         .feature-btn {
             padding: 10px 20px; border-radius: 25px; border: 2px solid; background: transparent;
-            font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+            font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
             text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
         }
+        .feature-btn:hover { transform: translateY(-3px) scale(1.03); color: #000 !important; }
         .donate-btn { border-color: #ff69b4; color: #ff69b4; }
-        .donate-btn:hover { background: #ff69b4; color: #000; }
+        .donate-btn:hover { background: #ff69b4; }
         .stats-btn { border-color: #8a2be2; color: #8a2be2; }
-        .stats-btn:hover { background: #8a2be2; color: #000; }
+        .stats-btn:hover { background: #8a2be2; }
         .search-container { margin-bottom: 30px; position: relative; }
         .search-input {
             width: 100%; background: #111111; border: 1px solid #333333; border-radius: 8px;
             padding: 14px 18px; color: #ffffff; font-size: 16px; outline: none; padding-left: 45px;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
+        .search-input:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3); }
         .search-input::placeholder { color: #888888; }
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888888; font-size: 18px; }
         .search-icon svg { width: 20px; height: 20px; fill: currentColor; }
@@ -104,10 +122,10 @@
         .nav-tab:not(.active):hover { color: #ffffff; }
         .endpoint-card {
             background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 25px;
-            margin-bottom: 18px; cursor: pointer; transition: all 0.2s ease; position: relative;
+            margin-bottom: 18px; cursor: pointer; transition: all 0.3s ease; position: relative;
             display: block; text-decoration: none; color: inherit;
         }
-        .endpoint-card:hover { border-color: #007bff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);}
+        .endpoint-card:hover { border-color: #007bff; transform: translateY(-5px) scale(1.01); box-shadow: 0 8px 20px rgba(0, 123, 255, 0.15);}
         .endpoint-header { display: flex; align-items: center; margin-bottom: 14px; }
         .method-badge {
             background: #00ff88; color: #000000; padding: 5px 10px; border-radius: 4px;
@@ -115,7 +133,7 @@
         }
         .endpoint-path { font-family: 'Monaco', monospace; font-size: 15px; color: #ffffff; font-weight: 600; word-break: break-all; }
         .arrow-icon { margin-left: auto; color: #666666; font-size: 18px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
-        .endpoint-card:hover .arrow-icon { color: #007bff; transform: translateX(4px); }
+        .endpoint-card:hover .arrow-icon { color: #007bff; transform: translateX(4px) scale(1.1); }
         .arrow-icon svg { width: 18px; height: 18px; fill: currentColor; }
         .endpoint-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
         .endpoint-description { color: #888888; font-size: 14px; line-height: 1.5; }
@@ -127,10 +145,10 @@
         @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 1; transform: scale(1.1); } }
         .whatsapp-community {
             display: inline-block; padding: 8px 15px; background-color: #25D366; color: #ffffff;
-            text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s ease;
+            text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s ease, transform 0.2s ease;
             font-size: 14px; margin: 10px 0;
         }
-        .whatsapp-community:hover { background-color: #128C7E; }
+        .whatsapp-community:hover { background-color: #128C7E; transform: translateY(-2px); }
         .dashboard-content { display: none; }
         .message { margin-bottom: 15px; padding: 10px; border-radius: 5px; font-size: 0.9rem; text-align: center; }
         .message.error { background-color: #ff4d4d; color: white; }
@@ -145,6 +163,7 @@
             .subtitle { font-size: 16px; margin-bottom: 40px;}
             .api-info-container { padding: 20px; }
             .api-info-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .api-info-label {min-width: unset;}
             .base-url-container, .apikey-info-value-container { width: 100%; }
             .feature-buttons { gap: 10px; margin-bottom: 40px; }
             .nav-tabs { flex-direction: column; gap: 5px; }
@@ -155,7 +174,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <div class="header animate-on-scroll" data-gsap-delay="0.1">
             <a href="/dashboard" class="logo">WANZOFC TECH</a>
             <div class="profile-dropdown" id="profileDropdownContainer" style="display: none;">
                 <a href="#" class="profile-icon-trigger" id="profileDropdownTrigger" title="Menu Pengguna">
@@ -173,32 +192,51 @@
             </div>
         </div>
 
-        <div id="authMessageContainer"></div>
+        <div id="authMessageContainer" class="animate-on-scroll" data-gsap-delay="0.2"></div>
         
         <div class="dashboard-content" id="mainDashboardContent">
-            <h1 class="main-title">Dashboard & Dokumentasi API</h1>
-            <p class="greeting" id="userGreeting"></p>
-            <p class="subtitle">Platform dokumentasi dan pengujian endpoint API yang komprehensif.</p>
+            <h1 class="main-title animate-on-scroll" data-gsap-y-from="30" data-gsap-delay="0.2">Dashboard & Dokumentasi API</h1>
+            <p class="greeting animate-on-scroll" id="userGreeting" data-gsap-delay="0.3"></p>
+            <p class="subtitle animate-on-scroll" data-gsap-delay="0.4">Platform dokumentasi dan pengujian endpoint API yang komprehensif.</p>
             <div id="message-area-dashboard" class="message" style="display: none;"></div>
 
-            <div class="api-info-container">
+            <div class="api-info-container animate-on-scroll" data-gsap-delay="0.5">
                 <div class="api-info-row">
                     <div class="api-info-icon apikey-info-icon">
                         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,12A2,2 0 0,0 22,10V8A2,2 0 0,0 20,6H16.83C16.42,4.84 15.3,4 14,4A3,3 0 0,0 11,7A3,3 0 0,0 14,10C15.3,10 16.42,9.16 16.83,8H20V10L18,11L20,12M14,6A1,1 0 0,1 15,7A1,1 0 0,1 14,8A1,1 0 0,1 13,7A1,1 0 0,1 14,6M2,4V6H9V4H2M2,10H7V8H2V10M2,16H9V14H2V16M2,22H7V20H2V22Z" /></svg>
                     </div>
-                    <span class="apikey-info-label">API Key Anda:</span>
+                    <span class="apikey-info-label">API Key Default:</span>
                     <div class="apikey-info-value-container">
                         <input type="text" class="apikey-input" id="userApiKey" value="Memuat..." readonly>
                         <div class="action-btn-group">
-                            <button class="action-btn" id="copyApiKeyBtn" title="Salin API Key">
+                            <button class="action-btn" id="copyApiKeyBtn" title="Salin API Key Default">
                                 <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
                             </button>
-                            <button class="action-btn" id="regenerateApiKeyBtn" title="Regenerate API Key">
+                            <button class="action-btn" id="regenerateApiKeyBtn" title="Regenerate API Key Default">
                                 <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,6V9L16,5L12,1V4C7.58,4 4,7.58 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13.01 6,12C6,8.69 8.69,6 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,10.99 18,12C18,15.31 15.31,18 12,18V15L8,19L12,23V20C16.42,20 20,16.42 20,12C20,10.43 19.54,8.97 18.76,7.74Z"/></svg>
                             </button>
                         </div>
                     </div>
                 </div>
+                <div class="api-info-row" id="customApiKeyRow" style="display:none;">
+                    <div class="api-info-icon apikey-info-icon" style="color:#00e676;">
+                         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.8,11.2C20.4,10.8 19.8,10.6 19.2,10.4L19,10.4C19,10.2 19,10 19,9.8V9.2C19,8.6 18.8,8 18.4,7.6L18.2,7.4C18,7.2 17.8,7.2 17.6,7.2C17.4,7.2 17.2,7.2 17,7.4L16.4,8C16,8.4 15.4,8.6 14.8,8.8L14.6,8.8C14.6,8.6 14.6,8.4 14.6,8.2V7.6C14.6,7 14.4,6.4 14,6L13.8,5.8C13.6,5.6 13.4,5.6 13.2,5.6C13,5.6 12.8,5.6 12.6,5.8L12,6.4C11.6,6.8 11,7 10.4,7.2H10.2C10.2,7 10.2,6.8 10.2,6.6V6C10.2,5.4 10,4.8 9.6,4.4L9.4,4.2C9.2,4 9,4 8.8,4C8.6,4 8.4,4 8.2,4.2L7.6,4.8C7.2,5.2 7,5.8 6.8,6.4V6.6C6.6,6.6 6.4,6.6 6.2,6.6H5.6C5,6.6 4.4,6.8 4,7.2L3.8,7.4C3.6,7.6 3.6,7.8 3.6,8C3.6,8.2 3.6,8.4 3.8,8.6L4.4,9.2C4.8,9.6 5,10.2 5.2,10.8H5.4C5.4,11 5.4,11.2 5.4,11.4V12C5.4,12.6 5.6,13.2 6,13.6L6.2,13.8C6.4,14 6.6,14 6.8,14C7,14 7.2,14 7.4,13.8L8,13.2C8.4,12.8 9,12.6 9.6,12.4V12.2C9.8,12.2 10,12.2 10.2,12.2H10.8C11.4,12.2 12,12 12.4,11.6L12.6,11.4C12.8,11.2 12.8,11 12.8,10.8C12.8,10.6 12.8,10.4 12.6,10.2L12,9.6C11.6,9.2 11,9 10.4,8.8C10.6,8.8 10.8,8.8 11,8.8H11.6C11.8,8.8 12,9 12.2,9.2L12.8,9.8C13,10 13.2,10.2 13.4,10.2C13.6,10.2 13.8,10.2 14,10L14.6,9.4C14.8,9.2 15,9 15.2,9H15.8C16,9 16.2,9.2 16.4,9.4L17,10C17.2,10.2 17.4,10.2 17.6,10.2C17.8,10.2 18,10.2 18.2,10L18.8,9.4C19,9.2 19.2,9 19.4,9H20C20.6,9 21.2,9.2 21.6,9.6L21.8,9.8C22,10 22,10.2 22,10.4C22,10.6 22,10.8 21.8,11L21.2,11.6C21,11.8 20.8,12 20.6,12H20C19.4,12 18.8,12.2 18.4,12.6C18.2,12.8 18,13 17.8,13H17.2C17,13 16.8,12.8 16.6,12.6L16,12C15.8,11.8 15.6,11.8 15.4,11.8C15.2,11.8 15,11.8 14.8,12L14.2,12.6C14,12.8 13.8,13 13.6,13H13C12.4,13 11.8,13.2 11.4,13.6L11.2,13.8C11,14 11,14.2 11,14.4C11,14.6 11,14.8 11.2,15L11.8,15.6C12,15.8 12.2,16 12.4,16H13C13.6,16 14.2,15.8 14.6,15.4L14.8,15.2C15,15 15,14.8 15,14.6C15,14.4 15,14.2 14.8,14L14.2,13.4C14,13.2 13.8,13.2 13.6,13.2L14.6,12.2C14.8,12 15,11.8 15.2,11.8H15.8C16,11.8 16.2,12 16.4,12.2L17,12.8C17.2,13 17.4,13.2 17.6,13.2C17.8,13.2 18,13.2 18.2,13L18.8,12.4C19,12.2 19.2,12 19.4,12H20C20.2,12 20.4,11.8 20.6,11.6L20.8,11.2M17.6,4.8L16.2,3.4C15,2.2 13.2,2.2 12,3.4L10.6,4.8L12,6.2L13.4,4.8C13.8,4.4 14.4,4.4 14.8,4.8L16.2,6.2L17.6,4.8M3.4,16.2L4.8,17.6L6.2,16.2L4.8,14.8C4.4,14.4 4.4,13.8 4.8,13.4L6.2,12L4.8,10.6L3.4,12C2.2,13.2 2.2,15 3.4,16.2Z" /></svg>
+                    </div>
+                    <span class="apikey-info-label">Custom API Key:</span>
+                    <div class="apikey-info-value-container">
+                        <input type="text" class="apikey-input" id="customUserApiKeyInput" placeholder="Atur API Key custom Anda" style="color:#00e676;">
+                        <div class="action-btn-group">
+                             <button class="action-btn" id="copyCustomApiKeyBtn" title="Salin Custom API Key" style="display:none;">
+                                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                            </button>
+                            <button class="action-btn" id="saveCustomApiKeyBtn" title="Simpan Custom API Key">
+                                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3M19 19H5V5H16.17L19 7.83V19M12 12C10.34 12 9 13.34 9 15S10.34 18 12 18 15 16.66 15 15 13.66 12 12 12M6 6H15V10H6V6Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                 <div id="message-custom-api-key" class="message" style="display: none; margin-top:10px;"></div>
+
                 <div class="api-info-row">
                     <div class="api-info-icon base-url-icon">
                         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
@@ -213,153 +251,253 @@
                 </div>
                  <div class="api-info-row">
                     <span class="api-info-icon">👤</span>
-                    <span class="base-url-label">Plan Anda:</span>
-                    <span class="ip-info-value" id="userPlan" style="background-color: #8a2be2; color:white;">Memuat...</span>
+                    <span class="apikey-info-label">Plan Anda:</span>
+                    <span class="plan-info-value" id="userPlan">Memuat...</span>
                 </div>
                  <div class="api-info-row">
                     <span class="api-info-icon">📊</span>
-                    <span class="base-url-label">Sisa Request Hari Ini:</span>
-                    <span class="ip-info-value" id="userRequestsLeft" style="background-color: #00ff88; color:black;">Memuat...</span>
+                    <span class="apikey-info-label">Sisa Request Hari Ini:</span>
+                    <span class="requests-info-value" id="userRequestsLeft">Memuat...</span>
+                </div>
+                <div class="api-info-row" id="planExpirationRow" style="display:none;">
+                    <span class="api-info-icon">⏳</span>
+                    <span class="apikey-info-label">Plan Berakhir:</span>
+                    <span class="expiration-info-value" id="userPlanExpiration">Memuat...</span>
                 </div>
             </div>
 
-            <div class="feature-buttons">
-                <a href="#" class="feature-btn donate-btn" target="_blank" rel="noopener noreferrer">♥ Donasi</a>
-                <a href="#" class="feature-btn stats-btn" target="_blank" rel="noopener noreferrer">↗ Statistik Penggunaan</a>
+            <div class="feature-buttons stagger-children-on-scroll" data-gsap-stagger="0.1" data-gsap-delay="0.6">
+                <a href="#" id="donateLink" class="feature-btn donate-btn" target="_blank" rel="noopener noreferrer">♥ Donasi</a>
+                <a href="#" id="statsLink" class="feature-btn stats-btn" target="_blank" rel="noopener noreferrer">↗ Statistik</a>
             </div>
 
-            <div class="search-container">
+            <div class="search-container animate-on-scroll" data-gsap-delay="0.7">
                 <input type="text" id="search-input" class="search-input" placeholder="Cari fitur API...">
                 <div class="search-icon">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L19.7,19L18.29,20.41L12.93,15.15C11.85,15.82 10.55,16.2 9.5,16.2A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
                 </div>
             </div>
 
-            <div class="nav-tabs" id="apiTabs">
+            <div class="nav-tabs animate-on-scroll" id="apiTabs" data-gsap-delay="0.8">
             </div>
 
-            <div class="endpoint-cards" id="endpoint-cards">
+            <div class="endpoint-cards stagger-children-on-scroll" id="endpoint-cards" data-gsap-stagger="0.05" data-gsap-y-from="20" data-gsap-delay="0.9">
             </div>
         </div>
     </div>
 
-    <footer class="footer">
+    <footer class="footer animate-on-scroll" data-gsap-y-from="20" data-gsap-delay="1">
         <div class="footer-flame">🔥</div>
         <p>API WANZOFC TECH</p>
-        <a href="#" class="whatsapp-community" target="_blank" rel="noopener noreferrer">
+        <a href="#" id="whatsappLink" class="whatsapp-community" target="_blank" rel="noopener noreferrer">
             Gabung Komunitas WhatsApp
         </a>
         <p>© <span id="year-footer"></span> WANZOFC TECH. All rights reserved.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="js/global-animations.js"></script>
     <script>
         document.getElementById('year-footer').textContent = new Date().getFullYear();
         const mainDashboardContent = document.getElementById('mainDashboardContent');
         const authMessageContainer = document.getElementById('authMessageContainer');
         const userGreeting = document.getElementById('userGreeting');
-        const userApiKeyInput = document.getElementById('userApiKey');
+        const userApiKeyInput = document.getElementById('userApiKey'); 
+        const customApiKeyRow = document.getElementById('customApiKeyRow');
+        const customUserApiKeyInput = document.getElementById('customUserApiKeyInput');
+        const copyCustomApiKeyBtn = document.getElementById('copyCustomApiKeyBtn');
+        const saveCustomApiKeyBtn = document.getElementById('saveCustomApiKeyBtn');
+        const messageCustomApiKey = document.getElementById('message-custom-api-key');
+
         const userPlanSpan = document.getElementById('userPlan');
         const userRequestsLeftSpan = document.getElementById('userRequestsLeft');
+        const planExpirationRow = document.getElementById('planExpirationRow');
+        const userPlanExpirationSpan = document.getElementById('userPlanExpiration');
         const profileDropdownContainer = document.getElementById('profileDropdownContainer');
         const loginRegisterLinks = document.getElementById('loginRegisterLinks');
         const messageAreaDashboard = document.getElementById('message-area-dashboard');
         const apiBaseUrlInput = document.getElementById('apiBaseUrl');
         const apiTabsContainer = document.getElementById('apiTabs');
 
+        let currentUserData = null; 
+        let currentActiveApiKey = ''; 
+        let currentApiBaseUrl = '';
+
         function showMessageDashboard(message, type = 'error') {
             messageAreaDashboard.textContent = message;
             messageAreaDashboard.className = `message ${type}`;
             messageAreaDashboard.style.display = 'block';
-            setTimeout(() => { messageAreaDashboard.style.display = 'none'; }, 3000);
+            gsap.fromTo(messageAreaDashboard, {opacity:0, y:-10}, {opacity:1, y:0, duration:0.3});
+            setTimeout(() => { 
+                 gsap.to(messageAreaDashboard, {opacity:0, y:-10, duration:0.3, onComplete: () => {
+                    messageAreaDashboard.style.display = 'none';
+                 }});
+            }, 3000);
         }
         
         async function fetchUserProfile() {
             const token = localStorage.getItem('wanzofcToken');
             if (!token) {
                 authMessageContainer.innerHTML = `<p class="auth-message">Anda belum login. Silakan <a href="/login">Login</a> atau <a href="/register">Register</a> untuk mengakses dashboard.</p>`;
+                gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
                 profileDropdownContainer.style.display = 'none';
                 loginRegisterLinks.style.display = 'block';
+                mainDashboardContent.style.display = 'none';
                 return null;
             }
             try {
-                const response = await fetch('/api/user/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
-                if (data.success) {
+                if (data.success && data.user) {
                     mainDashboardContent.style.display = 'block';
                     profileDropdownContainer.style.display = 'inline-block';
                     loginRegisterLinks.style.display = 'none';
+                    currentUserData = data.user;
+                    localStorage.setItem('wanzofcUser', JSON.stringify(data.user));
                     return data.user;
                 } else {
-                    localStorage.removeItem('wanzofcToken');
-                    localStorage.removeItem('wanzofcUser');
-                    authMessageContainer.innerHTML = `<p class="auth-message">Sesi Anda telah berakhir atau tidak valid. Silakan <a href="/login">Login</a> kembali.</p>`;
+                    localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
+                    authMessageContainer.innerHTML = `<p class="auth-message">Sesi Anda telah berakhir. Silakan <a href="/login">Login</a> kembali.</p>`;
+                    gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
                     profileDropdownContainer.style.display = 'none';
                     loginRegisterLinks.style.display = 'block';
+                    mainDashboardContent.style.display = 'none';
                     return null;
                 }
             } catch (error) {
-                console.error('Error fetching profile:', error);
-                authMessageContainer.innerHTML = `<p class="auth-message">Gagal memuat data pengguna. Coba refresh halaman atau <a href="/login">Login</a> kembali.</p>`;
+                authMessageContainer.innerHTML = `<p class="auth-message">Gagal memuat data. Coba refresh atau <a href="/login">Login</a> kembali.</p>`;
+                gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
                 profileDropdownContainer.style.display = 'none';
                 loginRegisterLinks.style.display = 'block';
+                mainDashboardContent.style.display = 'none';
                 return null;
             }
         }
 
         function populateDashboard(user) {
             if (!user) return;
-            userGreeting.textContent = `Halo, ${user.username}!`;
-            userApiKeyInput.value = user.apiKey;
+            userGreeting.textContent = `Halo, ${user.username}! Selamat datang kembali.`;
+            userApiKeyInput.value = user.apiKey; 
+            currentActiveApiKey = user.activeApiKey;
+
+            if (user.customApiKey) {
+                customUserApiKeyInput.value = user.customApiKey;
+                copyCustomApiKeyBtn.style.display = 'inline-flex';
+            } else {
+                customUserApiKeyInput.placeholder = "Atur API Key custom Anda";
+                copyCustomApiKeyBtn.style.display = 'none';
+            }
+
+            if (user.plan !== 'Free' && user.planExpirationDate && new Date(user.planExpirationDate) > new Date()) {
+                customApiKeyRow.style.display = 'flex';
+                planExpirationRow.style.display = 'flex';
+                const expDate = new Date(user.planExpirationDate);
+                userPlanExpirationSpan.textContent = expDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            } else {
+                customApiKeyRow.style.display = 'none';
+                planExpirationRow.style.display = 'none';
+                if (user.plan !== 'Free' && user.planExpirationDate && new Date(user.planExpirationDate) <= new Date()){
+                    userPlanExpirationSpan.textContent = 'Telah Berakhir - Silakan Perpanjang';
+                    planExpirationRow.style.display = 'flex';
+                }
+            }
+            
             userPlanSpan.textContent = user.plan;
             const requestsLeft = user.apiLimit - user.requestsToday;
             userRequestsLeftSpan.textContent = `${requestsLeft < 0 ? 0 : requestsLeft} / ${user.apiLimit}`;
-            apiBaseUrlInput.value = `${window.location.origin}/api`;
+            currentApiBaseUrl = `${window.location.origin}/api`;
+            apiBaseUrlInput.value = currentApiBaseUrl;
+
+            const dashboardElements = document.querySelectorAll('#mainDashboardContent > *:not(.header):not(#authMessageContainer)');
+            gsap.fromTo(dashboardElements, 
+                {opacity:0, y:20}, 
+                {opacity:1, y:0, duration:0.5, stagger:0.07, ease:"power2.out", 
+                scrollTrigger: { trigger: "#mainDashboardContent", start: "top 80%", toggleActions: "play none none none"}
+            });
+            filterEndpoints();
         }
 
-        document.getElementById('copyApiKeyBtn').addEventListener('click', () => copyToClipboard(userApiKeyInput, 'API Key'));
+        document.getElementById('copyApiKeyBtn').addEventListener('click', () => copyToClipboard(userApiKeyInput, 'API Key Default'));
         document.getElementById('copyBaseUrlBtn').addEventListener('click', () => copyToClipboard(apiBaseUrlInput, 'Base URL API'));
         
+        if (copyCustomApiKeyBtn) {
+            copyCustomApiKeyBtn.addEventListener('click', () => {
+                if(customUserApiKeyInput.value){ copyToClipboard(customUserApiKeyInput, 'Custom API Key'); } 
+                else { showMessageCustomApiKey('Custom API Key belum diatur.', 'error'); }
+            });
+        }
+
         function copyToClipboard(inputElement, typeName) {
-            inputElement.select();
-            inputElement.setSelectionRange(0, 99999); 
-            try {
-                document.execCommand('copy');
-                showMessageDashboard(`${typeName} berhasil disalin!`, 'success');
-            } catch (err) {
-                showMessageDashboard(`Gagal menyalin ${typeName}.`, 'error');
-            }
+            inputElement.select(); inputElement.setSelectionRange(0, 99999); 
+            try { document.execCommand('copy'); showMessageDashboard(`${typeName} berhasil disalin!`, 'success'); } 
+            catch (err) { showMessageDashboard(`Gagal menyalin ${typeName}.`, 'error'); }
             window.getSelection().removeAllRanges();
         }
 
         document.getElementById('regenerateApiKeyBtn').addEventListener('click', async () => {
-            if (!confirm('Apakah Anda yakin ingin membuat API Key baru? API Key lama akan tidak berlaku.')) return;
-            const token = localStorage.getItem('wanzofcToken');
-            if (!token) return;
+            if (!confirm('Yakin ingin membuat API Key default baru? API Key default lama akan tidak berlaku jika belum ada Custom API Key.')) return;
+            const token = localStorage.getItem('wanzofcToken'); if (!token) return;
             try {
-                const response = await fetch('/api/user/regenerate-apikey', {
-                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/user/regenerate-apikey', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
                 if (data.success) {
                     userApiKeyInput.value = data.apiKey;
-                    const storedUser = JSON.parse(localStorage.getItem('wanzofcUser'));
-                    if (storedUser) {
-                        storedUser.apiKey = data.apiKey;
-                        localStorage.setItem('wanzofcUser', JSON.stringify(storedUser));
-                        currentUserApiKey = data.apiKey;
+                    if (currentUserData) {
+                        currentUserData.apiKey = data.apiKey;
+                        if (!currentUserData.customApiKey) currentActiveApiKey = data.apiKey;
+                        localStorage.setItem('wanzofcUser', JSON.stringify(currentUserData));
                     }
-                    showMessageDashboard('API Key berhasil diperbarui!', 'success');
+                    showMessageDashboard('API Key Default berhasil diperbarui!', 'success');
                     filterEndpoints();
-                } else {
-                    showMessageDashboard(data.message || 'Gagal memperbarui API Key.', 'error');
-                }
-            } catch (error) { showMessageDashboard('Error: Gagal memperbarui API Key.', 'error'); }
+                } else { showMessageDashboard(data.message || 'Gagal memperbarui API Key Default.', 'error'); }
+            } catch (error) { showMessageDashboard('Error: Gagal memperbarui API Key Default.', 'error'); }
         });
 
-        let currentApiBaseUrl = '';
-        let currentUserApiKey = '';
+        function showMessageCustomApiKey(message, type = 'error') {
+            messageCustomApiKey.textContent = message;
+            messageCustomApiKey.className = `message ${type}`;
+            messageCustomApiKey.style.display = 'block';
+            gsap.fromTo(messageCustomApiKey, {opacity:0, y:-10}, {opacity:1, y:0, duration:0.3});
+            setTimeout(() => { 
+                gsap.to(messageCustomApiKey, {opacity:0, y:-10, duration:0.3, onComplete: () => {
+                    messageCustomApiKey.style.display = 'none';
+                }});
+            }, 3000);
+        }
+        
+        if (saveCustomApiKeyBtn) {
+            saveCustomApiKeyBtn.addEventListener('click', async () => {
+                const token = localStorage.getItem('wanzofcToken'); if (!token) return;
+                const customKey = customUserApiKeyInput.value.trim();
+                if (!customKey && currentUserData && currentUserData.customApiKey) {
+                     if(!confirm("Yakin ingin menghapus Custom API Key? API Key Default akan digunakan.")) return;
+                } else if (!customKey && !(currentUserData && currentUserData.customApiKey)) {
+                    showMessageCustomApiKey('Custom API Key tidak boleh kosong untuk diatur.', 'error'); return;
+                }
+
+                try {
+                    const response = await fetch('/api/user/set-custom-apikey', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ customKey: customKey || null }) 
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        customUserApiKeyInput.value = data.customApiKey || '';
+                        currentActiveApiKey = data.customApiKey || currentUserData.apiKey;
+                        if (currentUserData) {
+                             currentUserData.customApiKey = data.customApiKey;
+                             currentUserData.activeApiKey = currentActiveApiKey;
+                             localStorage.setItem('wanzofcUser', JSON.stringify(currentUserData));
+                        }
+                        copyCustomApiKeyBtn.style.display = data.customApiKey ? 'inline-flex' : 'none';
+                        filterEndpoints(); 
+                        showMessageCustomApiKey(data.customApiKey ? 'Custom API Key berhasil disimpan!' : 'Custom API Key berhasil dihapus!', 'success');
+                    } else { showMessageCustomApiKey(data.message || 'Gagal menyimpan Custom API Key.', 'error'); }
+                } catch (error) { showMessageCustomApiKey('Error: Gagal menyimpan Custom API Key.', 'error'); }
+            });
+        }
 
         const allEndpoints = {
             aiTools: [
@@ -411,9 +549,7 @@
                 const tabButton = document.createElement('button');
                 tabButton.className = 'nav-tab';
                 tabButton.textContent = tabKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                if (index === 0) {
-                    tabButton.classList.add('active');
-                }
+                if (index === 0) { tabButton.classList.add('active'); }
                 tabButton.onclick = () => switchTab(tabButton, tabKey);
                 apiTabsContainer.appendChild(tabButton);
             });
@@ -423,16 +559,15 @@
             const container = document.getElementById('endpoint-cards');
             container.innerHTML = '';
             if (!endpoints || endpoints.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#777;">Tidak ada endpoint di kategori ini.</p>';
+                container.innerHTML = '<p style="text-align:center; color:#777;">Tidak ada endpoint di kategori ini atau hasil pencarian tidak ditemukan.</p>';
                 return;
             }
             endpoints.forEach(ep => {
                 const card = document.createElement('a');
-                const fullUrlWithPath = ep.path.replace('YOUR_API_KEY', currentUserApiKey || 'API_KEY_ANDA');
+                const fullUrlWithPath = ep.path.replace('YOUR_API_KEY', currentActiveApiKey || 'API_KEY_ANDA');
                 card.href = `${currentApiBaseUrl}${fullUrlWithPath}`;
                 card.className = 'endpoint-card';
-                card.target = '_blank';
-                card.rel = 'noopener noreferrer';
+                card.target = '_blank'; card.rel = 'noopener noreferrer';
                 card.innerHTML = `
                     <div class="endpoint-header">
                         <span class="method-badge">${ep.method}</span>
@@ -443,6 +578,7 @@
                     <p class="endpoint-description">${ep.description}</p>`;
                 container.appendChild(card);
             });
+            gsap.fromTo(".endpoint-card", {opacity:0, y:20}, {opacity:1, y:0, duration:0.4, stagger:0.05, ease:"power1.out"});
         }
 
         function filterEndpoints() {
@@ -468,11 +604,23 @@
         if (profileDropdownTrigger && profileDropdownMenu) {
             profileDropdownTrigger.addEventListener('click', function(event) {
                 event.preventDefault();
-                profileDropdownMenu.classList.toggle('show');
+                const isShown = profileDropdownMenu.classList.toggle('show');
+                if (isShown) {
+                    gsap.fromTo(profileDropdownMenu, {opacity:0, scale:0.9, y:-10}, {opacity:1, scale:1, y:0, duration:0.2, ease:"power1.out"});
+                } else {
+                    gsap.to(profileDropdownMenu, {opacity:0, scale:0.9, y:-10, duration:0.2, ease:"power1.in", onComplete: () => {
+                        profileDropdownMenu.classList.remove('show'); 
+                    }});
+                }
             });
             window.addEventListener('click', function(event) {
-                if (profileDropdownContainer.style.display !== 'none' && !profileDropdownTrigger.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
-                    profileDropdownMenu.classList.remove('show');
+                if (profileDropdownContainer.style.display !== 'none' && 
+                    !profileDropdownTrigger.contains(event.target) && 
+                    !profileDropdownMenu.contains(event.target) &&
+                    profileDropdownMenu.classList.contains('show')) {
+                     gsap.to(profileDropdownMenu, {opacity:0, scale:0.9, y:-10, duration:0.2, ease:"power1.in", onComplete: () => {
+                        profileDropdownMenu.classList.remove('show'); 
+                    }});
                 }
             });
         }
@@ -481,8 +629,7 @@
         if (logoutButton) {
             logoutButton.addEventListener('click', function(event) {
                 event.preventDefault();
-                localStorage.removeItem('wanzofcToken');
-                localStorage.removeItem('wanzofcUser');
+                localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
                 window.location.href = '/';
             });
         }
@@ -492,16 +639,14 @@
             const user = await fetchUserProfile();
             if (user) {
                 populateDashboard(user);
-                currentUserApiKey = user.apiKey; 
-                currentApiBaseUrl = apiBaseUrlInput.value; 
-                
                 const firstTabKey = Object.keys(allEndpoints)[0];
                 const firstTabButton = apiTabsContainer.querySelector('.nav-tab');
-                if (firstTabButton) {
-                     switchTab(firstTabButton, firstTabKey);
-                }
+                if (firstTabButton) { switchTab(firstTabButton, firstTabKey); }
                 document.getElementById('search-input').addEventListener('input', filterEndpoints);
             }
+            document.getElementById('donateLink').href = "https://saweria.co/wanzofc"; 
+            document.getElementById('statsLink').href = "/api-stats"; 
+            document.getElementById('whatsappLink').href = "https://chat.whatsapp.com/EkJN9yBCj0mBIMHAd2d4hz";
         });
     </script>
 </body>

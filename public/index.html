@@ -4,195 +4,342 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WANZOFC TECH - Solusi API Terdepan</title>
+    <link rel="stylesheet" href="css/global-animations.css">
     <style>
+        :root {
+            --primary-color: #00aaff;
+            --primary-hover-color: #0088cc;
+            --secondary-color: #00e676; 
+            --secondary-hover-color: #00c664;
+            --background-dark: #0a0a1a;
+            --background-medium: #0f0f1f;
+            --background-light: #121222;
+            --text-light: #e0e0e0;
+            --text-medium: #c0c0c0;
+            --text-dark: #b0b0b0;
+            --border-color: #2a2a3a;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: #0a0a1a;
-            color: #e0e0e0;
+            background-color: var(--background-dark);
+            color: var(--text-light);
             line-height: 1.6;
+            overflow-x: hidden;
         }
         .navbar {
-            background-color: #121222;
+            background-color: transparent;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #2a2a3a;
+            border-bottom: 1px solid transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+        }
+        .navbar.scrolled {
+            background-color: rgba(10, 10, 30, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom-color: var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         .navbar .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #00aaff;
-            text-decoration: none;
+            font-size: 1.8rem; font-weight: bold; color: var(--primary-color); text-decoration: none;
+            transition: transform 0.3s ease-out;
         }
+        .navbar .logo:hover { transform: scale(1.05) rotate(-3deg); }
         .navbar .nav-links a {
-            color: #c0c0c0;
-            text-decoration: none;
-            margin-left: 1.5rem;
-            font-size: 1rem;
-            transition: color 0.3s ease;
+            color: var(--text-medium); text-decoration: none; margin-left: 1.5rem; font-size: 1rem;
+            transition: color 0.3s ease, transform 0.2s ease-out; display: inline-block; position: relative;
         }
-        .navbar .nav-links a:hover, .navbar .nav-links a.active {
-            color: #00aaff;
+        .navbar .nav-links a::after {
+            content: ''; position: absolute; width: 0; height: 2px; display: block;
+            margin-top: 5px; right: 0; background: var(--primary-color);
+            transition: width 0.3s ease, left 0.3s ease;
         }
-        .navbar .nav-links .cta-nav-button { /* Tombol CTA di navbar */
-            background-color: #00aaff;
-            color: #0a0a1a;
-            padding: 8px 18px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: bold;
-            border-radius: 50px;
-            transition: background-color 0.3s ease;
-            margin-left: 1.5rem;
+        .navbar .nav-links a:hover::after { width: 100%; left: 0; }
+        .navbar .nav-links a:hover, .navbar .nav-links a.active { color: var(--primary-color); transform: translateY(-2px); }
+        
+        .cta-button-base {
+            color: var(--background-dark); padding: 9px 20px;
+            font-weight: bold; border-radius: 50px; text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease-out, box-shadow 0.3s ease;
+            display: inline-block;
+            will-change: transform, box-shadow;
         }
-        .navbar .nav-links .cta-nav-button:hover {
-            background-color: #0088cc;
+        .cta-button-primary {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 170, 255, 0.2);
         }
-        .hero {
-            background: linear-gradient(rgba(10, 10, 30, 0.8), rgba(10, 10, 30, 0.95)), url('https://via.placeholder.com/1920x1080.png?text=WANZOFC+TECH+API') no-repeat center center/cover;
-            color: #ffffff;
-            text-align: center;
-            padding: 100px 20px 120px;
+        .cta-button-primary:hover {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 170, 255, 0.3); 
+            color: var(--background-dark);
         }
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
+        .cta-button-secondary {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 8px rgba(0, 230, 118, 0.2);
         }
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2.5rem;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            color: #d0d0d0;
+        .cta-button-secondary:hover {
+            background-color: var(--secondary-hover-color);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 5px 20px rgba(0, 230, 118, 0.4);
+            color: var(--background-dark);
+        }
+        .navbar .nav-links .cta-nav-button {
+             composes: cta-button-base cta-button-primary;
         }
         .hero .cta-button {
-            background-color: #00aaff;
-            color: #0a0a1a;
-            padding: 15px 35px;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 50px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: inline-block;
+            composes: cta-button-base cta-button-secondary;
+            padding: 18px 45px; font-size: 1.2rem;
         }
-        .hero .cta-button:hover {
-            background-color: #0088cc;
-            transform: translateY(-2px);
+
+        .hero {
+            background: linear-gradient(160deg, rgba(10, 10, 30, 0.85) 0%, rgba(18, 18, 40, 0.95) 100%), url('https://source.unsplash.com/random/1920x1080/?technology,network,futuristic') no-repeat center center/cover;
+            color: #ffffff; text-align: center; padding: 180px 20px 140px; 
+            min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; position: relative; overflow: hidden;
         }
-        .features-section {
-            padding: 80px 20px;
-            text-align: center;
-            background-color: #0f0f1f;
+        .hero-content { z-index: 2; position: relative;}
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 1.5rem; letter-spacing: -2px; font-weight: 800;
         }
-        .features-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            color: #ffffff;
+        .hero p {
+            font-size: clamp(1rem, 2.5vw, 1.35rem); margin-bottom: 3rem; max-width: 800px;
+            margin-left: auto; margin-right: auto; color: var(--text-light); line-height: 1.7;
+        }
+        .hero-visual {
+            margin-top: 3rem; max-width: 600px; width:90%;
+        }
+        .hero-visual img {
+            width: 100%; height: auto; border-radius: 12px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+        .section { padding: 90px 20px; text-align: center; }
+        .features-section { background-color: var(--background-medium); }
+        .section-title-global {
+            font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 70px; color: #ffffff;
+            font-weight: 700;
         }
         .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; max-width: 1300px; margin: 0 auto;
         }
         .feature-item {
-            background-color: #121222;
-            padding: 30px;
-            border-radius: 10px;
-            border: 1px solid #2a2a3a;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--background-light); padding: 40px 30px; border-radius: 15px;
+            border: 1px solid var(--border-color); text-align: left;
         }
-        .feature-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 170, 255, 0.1);
-        }
-        .feature-item .icon {
-            font-size: 3rem;
-            color: #00aaff;
-            margin-bottom: 15px;
-        }
-        .feature-item h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: #f0f0f0;
-        }
-        .feature-item p {
-            font-size: 1rem;
-            color: #b0b0b0;
-        }
+        .feature-item .icon { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 20px; display: inline-block; }
+        .feature-item h3 { font-size: 1.7rem; margin-bottom: 15px; color: var(--text-light); }
+        .feature-item p { font-size: 1.05rem; color: var(--text-dark); line-height: 1.65; }
+        
+        .lazy-image { opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .lazy-image.loaded { opacity: 1; }
+
         .footer {
-            background-color: #050515;
-            color: #a0a0a0;
-            text-align: center;
-            padding: 30px 20px;
-            border-top: 1px solid #1a1a2a;
+            background-color: #050515; color: #a0a0a0; text-align: center;
+            padding: 50px 20px; border-top: 1px solid #1a1a2a;
         }
+        .footer p { margin-bottom: 0.8rem; font-size: 0.95rem; }
+        .footer .social-links a {
+            color: var(--text-medium); margin: 0 12px; font-size: 1.6rem;
+        }
+        .footer .social-links a svg { width: 28px; height: 28px; }
+
         @media (max-width: 768px) {
-            .navbar { flex-direction: column; }
-            .navbar .logo { margin-bottom: 0.5rem; }
-            .navbar .nav-links { margin-top: 1rem; text-align: center; }
-            .navbar .nav-links a { margin: 0.5rem 0.5rem; display: inline-block; }
-            .navbar .nav-links .cta-nav-button { margin-left: 0; margin-top: 0.5rem;}
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1.1rem; }
+            .navbar { flex-direction: column; padding: 1rem; }
+            .navbar .logo { margin-bottom: 0.8rem; }
+            .navbar .nav-links { 
+                margin-top: 0.8rem; text-align: center; width: 100%;
+                display: flex; flex-wrap: wrap; justify-content: center;
+            }
+            .navbar .nav-links a { margin: 0.5rem; padding: 0.3rem 0.5rem;}
+            .navbar .nav-links .cta-nav-button { composes: cta-button-base cta-button-primary; margin-left: 0.5rem; margin-top: 0.5rem;}
+            .hero { padding-top: 150px; padding-bottom:100px; min-height: 85vh;}
+            .hero-content { padding: 0 10px; }
+            .section { padding: 70px 15px; }
+            .features-grid { grid-template-columns: 1fr; gap: 30px; }
+            .feature-item { padding: 30px 25px; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="index.html" class="logo">WANZOFC TECH</a>
+    <nav class="navbar" id="mainNavbar">
+        <a href="index.html" class="logo">WANZOFC</a>
         <div class="nav-links">
-            <a href="#features">Fitur</a>
-            <a href="/pricing">Harga</a>
-            <a href="/login">Login</a>
-            <a href="/register" class="cta-nav-button">Daftar Gratis</a>
+            <a href="#features" class="nav-item">Fitur</a>
+            <a href="/pricing" class="nav-item">Harga</a>
+            <a href="/login" id="navLoginLink" class="nav-item">Login</a>
+            <a href="/register" id="navRegisterLink" class="nav-item cta-button-base cta-button-primary">Daftar Gratis</a>
+            <a href="/dashboard" id="navDashboardLink" class="nav-item" style="display:none;">Dashboard</a>
+            <a href="#" id="navLogoutLink" class="nav-item" style="display:none;">Logout</a>
         </div>
     </nav>
 
-    <header class="hero">
-        <h1>Bangun Aplikasi Lebih Cepat dengan API Kami</h1>
-        <p>Integrasi mudah, dokumentasi lengkap, dan performa handal untuk mendukung proyek inovatif Anda. Mulai dari downloader hingga fitur AI, semua ada di sini.</p>
-        <a href="register.html" class="cta-button">Mulai Sekarang, Gratis!</a>
+    <header class="hero parallax-bg" id="heroSection">
+        <div class="hero-content">
+            <h1 class="animate-on-scroll" data-gsap-y-from="50" data-gsap-duration="1">Bangun Aplikasi Inovatif Lebih Cepat</h1>
+            <p class="animate-on-scroll" data-gsap-y-from="40" data-gsap-delay="0.2" data-gsap-duration="1">
+                Akses berbagai API handal dengan integrasi mudah, dokumentasi lengkap, dan performa superior untuk proyek revolusioner Anda.
+            </p>
+             <div class="hero-visual animate-on-scroll" data-gsap-scale-from="0.8" data-gsap-delay="0.4" data-gsap-duration="1.2">
+                <img data-src="https://images.unsplash.com/photo-1605648916319-485fac162ceb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRlY2hub2xvZ3klMjBhYnN0cmFjdHxlbnwwfHwwfHx8MA&auto=format&fit=crop&w=800&q=70" alt="Ilustrasi Teknologi API Abstrak" class="lazy-image">
+            </div>
+            <a href="register.html" class="cta-button-base cta-button-secondary animate-on-scroll" data-gsap-y-from="30" data-gsap-scale-from="0.9" data-gsap-delay="0.6" data-gsap-duration="1" style="padding: 18px 45px; font-size: 1.2rem;">Mulai Uji Coba Gratis Sekarang!</a>
+        </div>
     </header>
 
-    <section id="features" class="features-section">
-        <h2>Kenapa Memilih WANZOFC TECH API?</h2>
-        <div class="features-grid">
-            <div class="feature-item">
-                <div class="icon">⚡</div>
-                <h3>Super Cepat</h3>
-                <p>Respon API secepat kilat untuk pengalaman pengguna yang optimal.</p>
+    <section id="features" class="section features-section">
+        <h2 class="section-title-global animate-on-scroll" data-gsap-y-from="40">Solusi API Terlengkap</h2>
+        <div class="features-grid stagger-children-on-scroll" data-gsap-stagger="0.15" data-gsap-y-from="30">
+            <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">⚡</div>
+                <h3>Super Cepat & Responsif</h3>
+                <p>Nikmati latensi rendah dan waktu respon API secepat kilat untuk pengalaman pengguna yang tak tertandingi.</p>
             </div>
-            <div class="feature-item">
-                <div class="icon">💡</div>
-                <h3>Mudah Digunakan</h3>
-                <p>Dokumentasi jelas dan endpoint intuitif, integrasi tanpa ribet.</p>
+            <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">💡</div>
+                <h3>Integrasi Mudah & Intuitif</h3>
+                <p>Dokumentasi yang jelas dan endpoint yang dirancang secara intuitif membuat proses integrasi menjadi mudah.</p>
             </div>
-            <div class="feature-item">
-                <div class="icon">🛡️</div>
-                <h3>Aman & Terpercaya</h3>
-                <p>Keamanan data prioritas kami, dengan uptime server yang tinggi.</p>
+            <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">🛡️</div>
+                <h3>Keamanan Terjamin</h3>
+                <p>Prioritas utama kami adalah keamanan data Anda, didukung oleh infrastruktur server dengan uptime tinggi.</p>
             </div>
-            <div class="feature-item">
-                <div class="icon">📈</div>
-                <h3>Skalabilitas</h3>
-                <p>Siap menangani pertumbuhan traffic aplikasi Anda tanpa kendala.</p>
+            <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">📈</div>
+                <h3>Skalabilitas Tinggi</h3>
+                <p>Platform kami siap mengakomodasi pertumbuhan traffic aplikasi Anda tanpa hambatan performa.</p>
+            </div>
+             <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">🌍</div>
+                <h3>Dukungan Developer Aktif</h3>
+                <p>Tim kami dan komunitas siap membantu Anda mengatasi berbagai tantangan teknis yang mungkin timbul.</p>
+            </div>
+             <div class="feature-item interactive-card">
+                <div class="icon svg-animated-icon">⚙️</div>
+                <h3>Fitur Terus Berkembang</h3>
+                <p>Kami secara rutin menambahkan API baru dan meningkatkan fitur yang sudah ada berdasarkan kebutuhan pengguna.</p>
             </div>
         </div>
     </section>
-
+    
     <footer class="footer">
-        <p>© <span id="year"></span> WANZOFC TECH. All Rights Reserved.</p>
+        <div class="social-links">
+             <a href="#" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5.52 4.5 10.02 10 10.02s10-4.5 10-10.02C22 6.53 17.5 2.04 12 2.04zm1.03 15.61h-2.3V12.2h-1.1v-2.13h1.1V8.62c0-1.08.66-1.68 1.63-1.68.46 0 .86.03 1.02.05v1.96h-1.16c-.53 0-.63.25-.63.62v1.08h1.76l-.23 2.13h-1.53v5.45z"/></svg></a>
+            <a href="#" aria-label="Twitter" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.67.9-.53 1.59-1.37 1.92-2.38-.84.5-1.78.86-2.79 1.07A4.477 4.477 0 0016.32 4c-2.38 0-4.31 1.93-4.31 4.31 0 .34.04.67.11.99C8.06 9.06 4.28 7.03 1.76 4.15c-.37.64-.58 1.37-.58 2.15 0 1.49.76 2.81 1.91 3.58-.71-.02-1.37-.22-1.95-.54v.05c0 2.08 1.48 3.82 3.44 4.21a4.242 4.242 0 01-1.95.07 4.307 4.307 0 004.02 2.98A8.915 8.915 0 010 17.54a12.449 12.449 0 006.75 1.98c8.11 0 12.54-6.72 12.54-12.54 0-.19 0-.38-.01-.57.86-.62 1.6-1.4 2.18-2.25z"/></svg></a>
+            <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2zm-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8c1.99 0 3.6-1.61 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm4.6 3.23a4.77 4.77 0 110 9.54 4.77 4.77 0 010-9.54zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm4.8-1.72a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4z"/></svg></a>
+        </div>
+        <p>© <span id="year"></span> WANZOFC TECH. Hak Cipta Dilindungi.</p>
+        <p>Dirancang dengan ❤️ dan ☕</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="js/global-animations.js"></script>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
+        const token = localStorage.getItem('wanzofcToken');
+        const navLoginLink = document.getElementById('navLoginLink');
+        const navRegisterLink = document.getElementById('navRegisterLink');
+        const navDashboardLink = document.getElementById('navDashboardLink');
+        const navLogoutLink = document.getElementById('navLogoutLink');
+        const mainNavbar = document.getElementById('mainNavbar');
+
+        if (token) {
+            navLoginLink.style.display = 'none';
+            navRegisterLink.style.display = 'none';
+            navDashboardLink.style.display = 'inline-block';
+            navLogoutLink.style.display = 'inline-block';
+
+            navLogoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('wanzofcToken');
+                localStorage.removeItem('wanzofcUser');
+                window.location.href = '/';
+            });
+        }
+
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > 50) {
+                mainNavbar.classList.add('scrolled');
+            } else {
+                mainNavbar.classList.remove('scrolled');
+            }
+            if (scrollTop > lastScrollTop && scrollTop > mainNavbar.offsetHeight){
+                mainNavbar.style.top = `-${mainNavbar.offsetHeight + 5}px`;
+            } else {
+                mainNavbar.style.top = "0";
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const lazyImages = [].slice.call(document.querySelectorAll("img.lazy-image"));
+            if ("IntersectionObserver" in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.onload = () => lazyImage.classList.add("loaded");
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                }, { rootMargin: "0px 0px 100px 0px" });
+                lazyImages.forEach(function(lazyImage) { lazyImageObserver.observe(lazyImage); });
+            } else {
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImage.src = lazyImage.dataset.src;
+                    lazyImage.onload = () => lazyImage.classList.add("loaded");
+                });
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if(targetElement){
+                    const offsetTop = targetElement.offsetTop - (mainNavbar.offsetHeight + 20); 
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                }
+            });
+        });
+
+        const heroTimeline = gsap.timeline({defaults: {ease: "power3.out", duration:1}});
+        heroTimeline
+            .fromTo(".hero h1", {opacity:0, y:70, skewY:5}, {opacity:1, y:0, skewY:0, delay:0.3})
+            .fromTo(".hero p", {opacity:0, y:50}, {opacity:1, y:0, stagger:0.15}, "-=0.7")
+            .fromTo(".hero-visual", {opacity:0, scale:0.7, y:40, rotationZ: -10}, {opacity:1, scale:1, y:0, rotationZ:0, duration:1.3, ease:"elastic.out(1, 0.6)"}, "-=0.6")
+            .fromTo(".hero .cta-button-base.cta-button-secondary", {opacity:0, y:30, scale:0.8}, {opacity:1, y:0, scale:1, duration:1.1, ease:"back.out(1.5)"}, "-=0.9");
+
+        if (document.getElementById('heroSection')) {
+            ScrollTrigger.create({
+                trigger: "#heroSection",
+                start: "top top",
+                end: "bottom top",
+                onUpdate: self => {
+                    gsap.to(".hero-content", { 
+                        yPercent: self.progress * -30, 
+                        opacity: 1 - (self.progress * 0.7), 
+                        filter: `blur(${self.progress * 5}px)`,
+                        ease:"none" 
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>
