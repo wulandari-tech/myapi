@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -17,6 +16,7 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
         .logo { font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 1px; position: relative; text-decoration: none;}
         .logo::before { content: "⚡"; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 16px; color: #ffffff;}
+        
         .profile-dropdown { position: relative; display: inline-block; }
         .profile-icon-trigger {
             width: 45px; height: 45px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
@@ -25,19 +25,42 @@
         }
         .profile-icon-trigger:hover { background: #333; transform: scale(1.05); }
         .profile-icon-trigger svg { width: 22px; height: 22px; fill: currentColor; }
+        
         .profile-dropdown-menu {
-            display: none; position: absolute; right: 0; top: 100%; background-color: #1c1c1c;
-            min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3); z-index: 100;
-            border-radius: 8px; border: 1px solid #444; margin-top: 10px; overflow: hidden;
-            transform-origin: top right;
+            display: none; 
+            position: absolute; 
+            right: 0; 
+            top: calc(100% + 10px); 
+            background-color: #1c1c1c;
+            min-width: 220px; 
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.4); 
+            z-index: 100;
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            overflow: hidden;
+            transform-origin: top right; 
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+        .profile-dropdown-menu.show { 
+            display: block; 
+            opacity: 1;
+            transform: scale(1) translateY(0);
         }
         .profile-dropdown-menu .dropdown-item {
-            color: #e0e0e0; padding: 12px 18px; text-decoration: none; display: block;
+            color: #e0e0e0; padding: 14px 20px; text-decoration: none; display: block;
             font-size: 15px; transition: background-color 0.2s ease, color 0.2s ease;
+            border-bottom: 1px solid #333;
         }
-        .profile-dropdown-menu .dropdown-item:hover { background-color: #007bff; color: #ffffff; }
-        .profile-dropdown-menu .dropdown-item:not(:last-child) { border-bottom: 1px solid #333; }
-        .profile-dropdown-menu.show { display: block; } /* JS akan menambah/menghapus ini */
+        .profile-dropdown-menu .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .profile-dropdown-menu .dropdown-item:hover { 
+            background-color: #007bff; 
+            color: #ffffff; 
+        }
+
         .auth-message { text-align: center; font-size: 1.2rem; color: #ffc107; padding: 20px; background-color: #332701; border-radius: 8px; margin-top: 50px;}
         .auth-message a { color: #00aaff; text-decoration: underline;}
         .main-title { font-size: clamp(2.5rem, 5vw, 3.2rem); font-weight: 800; text-align: center; margin-bottom: 10px; color: #ffffff; letter-spacing: -1.5px; }
@@ -408,13 +431,7 @@
             userRequestsLeftSpan.textContent = `${requestsLeft < 0 ? 0 : requestsLeft} / ${user.apiLimit}`;
             currentApiBaseUrl = `${window.location.origin}/api`;
             apiBaseUrlInput.value = currentApiBaseUrl;
-
-            const dashboardElements = document.querySelectorAll('#mainDashboardContent > *:not(.header):not(#authMessageContainer)');
-            gsap.fromTo(dashboardElements, 
-                {opacity:0, y:20}, 
-                {opacity:1, y:0, duration:0.5, stagger:0.07, ease:"power2.out", 
-                scrollTrigger: { trigger: "#mainDashboardContent", start: "top 80%", toggleActions: "play none none none"}
-            });
+            
             filterEndpoints();
         }
 
@@ -604,13 +621,22 @@
         if (profileDropdownTrigger && profileDropdownMenu) {
             profileDropdownTrigger.addEventListener('click', function(event) {
                 event.preventDefault();
-                const isShown = profileDropdownMenu.classList.toggle('show');
-                if (isShown) {
-                    gsap.fromTo(profileDropdownMenu, {opacity:0, scale:0.9, y:-10}, {opacity:1, scale:1, y:0, duration:0.2, ease:"power1.out"});
+                const isShown = profileDropdownMenu.classList.contains('show');
+                if (!isShown) {
+                    profileDropdownMenu.style.display = 'block'; 
+                    gsap.fromTo(profileDropdownMenu, 
+                        {opacity:0, scale:0.95, y:-10}, 
+                        {opacity:1, scale:1, y:0, duration:0.2, ease:"power2.out", onComplete: () => {
+                            profileDropdownMenu.classList.add('show');
+                        }}
+                    );
                 } else {
-                    gsap.to(profileDropdownMenu, {opacity:0, scale:0.9, y:-10, duration:0.2, ease:"power1.in", onComplete: () => {
-                        profileDropdownMenu.classList.remove('show'); 
-                    }});
+                    gsap.to(profileDropdownMenu, 
+                        {opacity:0, scale:0.95, y:-10, duration:0.2, ease:"power2.in", onComplete: () => {
+                            profileDropdownMenu.classList.remove('show'); 
+                            profileDropdownMenu.style.display = 'none';
+                        }}
+                    );
                 }
             });
             window.addEventListener('click', function(event) {
@@ -618,9 +644,12 @@
                     !profileDropdownTrigger.contains(event.target) && 
                     !profileDropdownMenu.contains(event.target) &&
                     profileDropdownMenu.classList.contains('show')) {
-                     gsap.to(profileDropdownMenu, {opacity:0, scale:0.9, y:-10, duration:0.2, ease:"power1.in", onComplete: () => {
-                        profileDropdownMenu.classList.remove('show'); 
-                    }});
+                     gsap.to(profileDropdownMenu, 
+                        {opacity:0, scale:0.95, y:-10, duration:0.2, ease:"power2.in", onComplete: () => {
+                            profileDropdownMenu.classList.remove('show'); 
+                            profileDropdownMenu.style.display = 'none';
+                        }}
+                    );
                 }
             });
         }
