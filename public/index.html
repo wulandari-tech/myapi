@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WANZOFC TECH - Solusi API Terdepan</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .navbar {
+            background-color: #121222;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a3a;
+        }
+        .navbar .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00aaff;
+            text-decoration: none;
+        }
+        .navbar .nav-links a {
+            color: #c0c0c0;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        .navbar .nav-links a:hover, .navbar .nav-links a.active {
+            color: #00aaff;
+        }
+        .navbar .nav-links .cta-nav-button { /* Tombol CTA di navbar */
+            background-color: #00aaff;
+            color: #0a0a1a;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: background-color 0.3s ease;
+            margin-left: 1.5rem;
+        }
+        .navbar .nav-links .cta-nav-button:hover {
+            background-color: #0088cc;
+        }
+        .hero {
+            background: linear-gradient(rgba(10, 10, 30, 0.8), rgba(10, 10, 30, 0.95)), url('https://via.placeholder.com/1920x1080.png?text=WANZOFC+TECH+API') no-repeat center center/cover;
+            color: #ffffff;
+            text-align: center;
+            padding: 100px 20px 120px;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #d0d0d0;
+        }
+        .hero .cta-button {
+            background-color: #00aaff;
+            color: #0a0a1a;
+            padding: 15px 35px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+        }
+        .hero .cta-button:hover {
+            background-color: #0088cc;
+            transform: translateY(-2px);
+        }
+        .features-section {
+            padding: 80px 20px;
+            text-align: center;
+            background-color: #0f0f1f;
+        }
+        .features-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #ffffff;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-item {
+            background-color: #121222;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #2a2a3a;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 170, 255, 0.1);
+        }
+        .feature-item .icon {
+            font-size: 3rem;
+            color: #00aaff;
+            margin-bottom: 15px;
+        }
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+        .feature-item p {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+        .footer {
+            background-color: #050515;
+            color: #a0a0a0;
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid #1a1a2a;
+        }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; }
+            .navbar .logo { margin-bottom: 0.5rem; }
+            .navbar .nav-links { margin-top: 1rem; text-align: center; }
+            .navbar .nav-links a { margin: 0.5rem 0.5rem; display: inline-block; }
+            .navbar .nav-links .cta-nav-button { margin-left: 0; margin-top: 0.5rem;}
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">WANZOFC TECH</a>
+        <div class="nav-links">
+            <a href="#features">Fitur</a>
+            <a href="/pricing">Harga</a>
+            <a href="/login">Login</a>
+            <a href="/register" class="cta-nav-button">Daftar Gratis</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Bangun Aplikasi Lebih Cepat dengan API Kami</h1>
+        <p>Integrasi mudah, dokumentasi lengkap, dan performa handal untuk mendukung proyek inovatif Anda. Mulai dari downloader hingga fitur AI, semua ada di sini.</p>
+        <a href="register.html" class="cta-button">Mulai Sekarang, Gratis!</a>
+    </header>
+
+    <section id="features" class="features-section">
+        <h2>Kenapa Memilih WANZOFC TECH API?</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="icon">⚡</div>
+                <h3>Super Cepat</h3>
+                <p>Respon API secepat kilat untuk pengalaman pengguna yang optimal.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">💡</div>
+                <h3>Mudah Digunakan</h3>
+                <p>Dokumentasi jelas dan endpoint intuitif, integrasi tanpa ribet.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">🛡️</div>
+                <h3>Aman & Terpercaya</h3>
+                <p>Keamanan data prioritas kami, dengan uptime server yang tinggi.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon">📈</div>
+                <h3>Skalabilitas</h3>
+                <p>Siap menangani pertumbuhan traffic aplikasi Anda tanpa kendala.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© <span id="year"></span> WANZOFC TECH. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

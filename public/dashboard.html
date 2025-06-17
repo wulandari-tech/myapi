@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WANZOFC TECH - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000; color: #ffffff; min-height: 100vh;
+            overflow-x: hidden; display: flex; flex-direction: column;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; flex-grow: 1; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
+        .logo { font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 1px; position: relative; text-decoration: none;}
+        .logo::before { content: "⚡"; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 16px; color: #ffffff;}
+        .profile-dropdown { position: relative; display: inline-block; }
+        .profile-icon-trigger {
+            width: 45px; height: 45px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none;
+            font-size: 20px; transition: all 0.2s ease; cursor: pointer;
+        }
+        .profile-icon-trigger:hover { background: #333; }
+        .profile-icon-trigger svg { width: 22px; height: 22px; fill: currentColor; }
+        .profile-dropdown-menu {
+            display: none; position: absolute; right: 0; top: 100%; background-color: #1c1c1c;
+            min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3); z-index: 100;
+            border-radius: 8px; border: 1px solid #444; margin-top: 10px; overflow: hidden;
+        }
+        .profile-dropdown-menu .dropdown-item {
+            color: #e0e0e0; padding: 12px 18px; text-decoration: none; display: block;
+            font-size: 15px; transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .profile-dropdown-menu .dropdown-item:hover { background-color: #007bff; color: #ffffff; }
+        .profile-dropdown-menu .dropdown-item:not(:last-child) { border-bottom: 1px solid #333; }
+        .profile-dropdown-menu.show { display: block; }
+        .auth-message { text-align: center; font-size: 1.2rem; color: #ffc107; padding: 20px; background-color: #332701; border-radius: 8px; margin-top: 50px;}
+        .auth-message a { color: #00aaff; text-decoration: underline;}
+        .main-title { font-size: 50px; font-weight: 800; text-align: center; margin-bottom: 10px; color: #ffffff; letter-spacing: -1.5px; }
+        .greeting {text-align: center; font-size: 1.2rem; color: #aaa; margin-bottom:15px;}
+        .subtitle { text-align: center; font-size: 18px; color: #888888; margin-bottom: 50px; font-weight: 400; }
+        .api-info-container { background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 30px; margin-bottom: 30px; }
+        .api-info-row { display: flex; align-items: center; margin-bottom: 25px; }
+        .api-info-row:last-child { margin-bottom: 0; }
+        .api-info-icon { width: 22px; height: 22px; margin-right: 14px; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        .apikey-info-icon { color: #ffc107; }
+        .apikey-info-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 10px; }
+        .apikey-info-value-container { flex: 1; position: relative; }
+        .apikey-input {
+            width: 100%; background: #1a1a1a; border: 1px solid #333333; border-radius: 8px;
+            padding: 14px 70px 14px 18px; color: #ffc107; font-family: 'Monaco', monospace;
+            font-size: 15px; outline: none; word-break: break-all; overflow-wrap: break-word;
+        }
+        .action-btn-group { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px;}
+        .action-btn {
+            background: none; border: none; color: #888; cursor: pointer; font-size: 15px;
+            display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+            padding: 0; transition: color 0.2s;
+        }
+        .action-btn:hover { color: #ffffff; }
+        .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .base-url-icon { color: #007bff; }
+        .base-url-label { font-size: 17px; font-weight: 600; color: #ffffff; margin-right: 18px; }
+        .base-url-container { flex: 1; position: relative; }
+        .base-url-input {
+            width: 100%; background: #1a1a1a; border: 1px solid #333333; border-radius: 8px;
+            padding: 14px 45px 14px 18px; color: #00ff88; font-family: 'Monaco', monospace;
+            font-size: 15px; outline: none; word-break: break-all; overflow-wrap: break-word;
+        }
+        .copy-btn {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none;
+            border: none; color: #666; cursor: pointer; font-size: 15px; display: flex;
+            align-items: center; justify-content: center; width: 20px; height: 20px;
+        }
+        .copy-btn:hover { color: #ffffff; }
+        .copy-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .feature-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 50px; flex-wrap: wrap; }
+        .feature-btn {
+            padding: 10px 20px; border-radius: 25px; border: 2px solid; background: transparent;
+            font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .donate-btn { border-color: #ff69b4; color: #ff69b4; }
+        .donate-btn:hover { background: #ff69b4; color: #000; }
+        .stats-btn { border-color: #8a2be2; color: #8a2be2; }
+        .stats-btn:hover { background: #8a2be2; color: #000; }
+        .search-container { margin-bottom: 30px; position: relative; }
+        .search-input {
+            width: 100%; background: #111111; border: 1px solid #333333; border-radius: 8px;
+            padding: 14px 18px; color: #ffffff; font-size: 16px; outline: none; padding-left: 45px;
+        }
+        .search-input::placeholder { color: #888888; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888888; font-size: 18px; }
+        .search-icon svg { width: 20px; height: 20px; fill: currentColor; }
+        .nav-tabs { display: flex; background: #111111; border-radius: 8px; padding: 4px; margin-bottom: 30px; border: 1px solid #333333; flex-wrap: wrap; }
+        .nav-tab {
+            flex-grow: 1; min-width: 100px; padding: 14px 10px; 
+            text-align: center; background: transparent; border: none;
+            color: #888888; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px;
+            transition: all 0.2s ease; position: relative;
+        }
+        .nav-tab.active { background: #007bff; color: #ffffff; }
+        .nav-tab:not(.active):hover { color: #ffffff; }
+        .endpoint-card {
+            background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 25px;
+            margin-bottom: 18px; cursor: pointer; transition: all 0.2s ease; position: relative;
+            display: block; text-decoration: none; color: inherit;
+        }
+        .endpoint-card:hover { border-color: #007bff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);}
+        .endpoint-header { display: flex; align-items: center; margin-bottom: 14px; }
+        .method-badge {
+            background: #00ff88; color: #000000; padding: 5px 10px; border-radius: 4px;
+            font-size: 12px; font-weight: 700; margin-right: 14px; text-transform: uppercase;
+        }
+        .endpoint-path { font-family: 'Monaco', monospace; font-size: 15px; color: #ffffff; font-weight: 600; word-break: break-all; }
+        .arrow-icon { margin-left: auto; color: #666666; font-size: 18px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .endpoint-card:hover .arrow-icon { color: #007bff; transform: translateX(4px); }
+        .arrow-icon svg { width: 18px; height: 18px; fill: currentColor; }
+        .endpoint-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .endpoint-description { color: #888888; font-size: 14px; line-height: 1.5; }
+        .footer {
+            background: #111111; color: #888; text-align: center; padding: 25px 20px;
+            border-top: 1px solid #333333; font-size: 14px;
+        }
+        .footer-flame { font-size: 22px; animation: pulse 2s infinite alternate; margin-bottom: 8px; }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 1; transform: scale(1.1); } }
+        .whatsapp-community {
+            display: inline-block; padding: 8px 15px; background-color: #25D366; color: #ffffff;
+            text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s ease;
+            font-size: 14px; margin: 10px 0;
+        }
+        .whatsapp-community:hover { background-color: #128C7E; }
+        .dashboard-content { display: none; }
+        .message { margin-bottom: 15px; padding: 10px; border-radius: 5px; font-size: 0.9rem; text-align: center; }
+        .message.error { background-color: #ff4d4d; color: white; }
+        .message.success { background-color: #4CAF50; color: white; }
+
+        @media (max-width: 992px) { 
+            .nav-tabs { justify-content: center; }
+            .nav-tab { font-size: 13px; padding: 12px 8px;}
+        }
+        @media (max-width: 768px) {
+            .main-title { font-size: 36px; }
+            .subtitle { font-size: 16px; margin-bottom: 40px;}
+            .api-info-container { padding: 20px; }
+            .api-info-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .base-url-container, .apikey-info-value-container { width: 100%; }
+            .feature-buttons { gap: 10px; margin-bottom: 40px; }
+            .nav-tabs { flex-direction: column; gap: 5px; }
+            .endpoint-path { font-size: 13px; }
+            .endpoint-title { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/dashboard" class="logo">WANZOFC TECH</a>
+            <div class="profile-dropdown" id="profileDropdownContainer" style="display: none;">
+                <a href="#" class="profile-icon-trigger" id="profileDropdownTrigger" title="Menu Pengguna">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
+                </a>
+                <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                    <a href="/pricing" class="dropdown-item">✨ Upgrade Akun</a>
+                    <a href="/profile" class="dropdown-item">⚙️ Profile Saya</a>
+                    <a href="#" class="dropdown-item" id="logoutButton">🚪 Logout</a>
+                </div>
+            </div>
+            <div id="loginRegisterLinks" style="display: block;">
+                <a href="/login" style="color: #00aaff; text-decoration: none; margin-right: 15px;">Login</a>
+                <a href="/register" style="color: #00aaff; text-decoration: none; padding: 8px 15px; border: 1px solid #00aaff; border-radius: 5px;">Register</a>
+            </div>
+        </div>
+
+        <div id="authMessageContainer"></div>
+        
+        <div class="dashboard-content" id="mainDashboardContent">
+            <h1 class="main-title">Dashboard & Dokumentasi API</h1>
+            <p class="greeting" id="userGreeting"></p>
+            <p class="subtitle">Platform dokumentasi dan pengujian endpoint API yang komprehensif.</p>
+            <div id="message-area-dashboard" class="message" style="display: none;"></div>
+
+            <div class="api-info-container">
+                <div class="api-info-row">
+                    <div class="api-info-icon apikey-info-icon">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,12A2,2 0 0,0 22,10V8A2,2 0 0,0 20,6H16.83C16.42,4.84 15.3,4 14,4A3,3 0 0,0 11,7A3,3 0 0,0 14,10C15.3,10 16.42,9.16 16.83,8H20V10L18,11L20,12M14,6A1,1 0 0,1 15,7A1,1 0 0,1 14,8A1,1 0 0,1 13,7A1,1 0 0,1 14,6M2,4V6H9V4H2M2,10H7V8H2V10M2,16H9V14H2V16M2,22H7V20H2V22Z" /></svg>
+                    </div>
+                    <span class="apikey-info-label">API Key Anda:</span>
+                    <div class="apikey-info-value-container">
+                        <input type="text" class="apikey-input" id="userApiKey" value="Memuat..." readonly>
+                        <div class="action-btn-group">
+                            <button class="action-btn" id="copyApiKeyBtn" title="Salin API Key">
+                                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                            </button>
+                            <button class="action-btn" id="regenerateApiKeyBtn" title="Regenerate API Key">
+                                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,6V9L16,5L12,1V4C7.58,4 4,7.58 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13.01 6,12C6,8.69 8.69,6 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,10.99 18,12C18,15.31 15.31,18 12,18V15L8,19L12,23V20C16.42,20 20,16.42 20,12C20,10.43 19.54,8.97 18.76,7.74Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="api-info-row">
+                    <div class="api-info-icon base-url-icon">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
+                    </div>
+                    <span class="base-url-label">Base URL API:</span>
+                    <div class="base-url-container">
+                        <input type="text" class="base-url-input" id="apiBaseUrl" value="Memuat..." readonly>
+                        <button class="copy-btn" id="copyBaseUrlBtn" title="Salin Base URL">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                 <div class="api-info-row">
+                    <span class="api-info-icon">👤</span>
+                    <span class="base-url-label">Plan Anda:</span>
+                    <span class="ip-info-value" id="userPlan" style="background-color: #8a2be2; color:white;">Memuat...</span>
+                </div>
+                 <div class="api-info-row">
+                    <span class="api-info-icon">📊</span>
+                    <span class="base-url-label">Sisa Request Hari Ini:</span>
+                    <span class="ip-info-value" id="userRequestsLeft" style="background-color: #00ff88; color:black;">Memuat...</span>
+                </div>
+            </div>
+
+            <div class="feature-buttons">
+                <a href="#" class="feature-btn donate-btn" target="_blank" rel="noopener noreferrer">♥ Donasi</a>
+                <a href="#" class="feature-btn stats-btn" target="_blank" rel="noopener noreferrer">↗ Statistik Penggunaan</a>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Cari fitur API...">
+                <div class="search-icon">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L19.7,19L18.29,20.41L12.93,15.15C11.85,15.82 10.55,16.2 9.5,16.2A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+                </div>
+            </div>
+
+            <div class="nav-tabs" id="apiTabs">
+            </div>
+
+            <div class="endpoint-cards" id="endpoint-cards">
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-flame">🔥</div>
+        <p>API WANZOFC TECH</p>
+        <a href="#" class="whatsapp-community" target="_blank" rel="noopener noreferrer">
+            Gabung Komunitas WhatsApp
+        </a>
+        <p>© <span id="year-footer"></span> WANZOFC TECH. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('year-footer').textContent = new Date().getFullYear();
+        const mainDashboardContent = document.getElementById('mainDashboardContent');
+        const authMessageContainer = document.getElementById('authMessageContainer');
+        const userGreeting = document.getElementById('userGreeting');
+        const userApiKeyInput = document.getElementById('userApiKey');
+        const userPlanSpan = document.getElementById('userPlan');
+        const userRequestsLeftSpan = document.getElementById('userRequestsLeft');
+        const profileDropdownContainer = document.getElementById('profileDropdownContainer');
+        const loginRegisterLinks = document.getElementById('loginRegisterLinks');
+        const messageAreaDashboard = document.getElementById('message-area-dashboard');
+        const apiBaseUrlInput = document.getElementById('apiBaseUrl');
+        const apiTabsContainer = document.getElementById('apiTabs');
+
+        function showMessageDashboard(message, type = 'error') {
+            messageAreaDashboard.textContent = message;
+            messageAreaDashboard.className = `message ${type}`;
+            messageAreaDashboard.style.display = 'block';
+            setTimeout(() => { messageAreaDashboard.style.display = 'none'; }, 3000);
+        }
+        
+        async function fetchUserProfile() {
+            const token = localStorage.getItem('wanzofcToken');
+            if (!token) {
+                authMessageContainer.innerHTML = `<p class="auth-message">Anda belum login. Silakan <a href="/login">Login</a> atau <a href="/register">Register</a> untuk mengakses dashboard.</p>`;
+                profileDropdownContainer.style.display = 'none';
+                loginRegisterLinks.style.display = 'block';
+                return null;
+            }
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    mainDashboardContent.style.display = 'block';
+                    profileDropdownContainer.style.display = 'inline-block';
+                    loginRegisterLinks.style.display = 'none';
+                    return data.user;
+                } else {
+                    localStorage.removeItem('wanzofcToken');
+                    localStorage.removeItem('wanzofcUser');
+                    authMessageContainer.innerHTML = `<p class="auth-message">Sesi Anda telah berakhir atau tidak valid. Silakan <a href="/login">Login</a> kembali.</p>`;
+                    profileDropdownContainer.style.display = 'none';
+                    loginRegisterLinks.style.display = 'block';
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                authMessageContainer.innerHTML = `<p class="auth-message">Gagal memuat data pengguna. Coba refresh halaman atau <a href="/login">Login</a> kembali.</p>`;
+                profileDropdownContainer.style.display = 'none';
+                loginRegisterLinks.style.display = 'block';
+                return null;
+            }
+        }
+
+        function populateDashboard(user) {
+            if (!user) return;
+            userGreeting.textContent = `Halo, ${user.username}!`;
+            userApiKeyInput.value = user.apiKey;
+            userPlanSpan.textContent = user.plan;
+            const requestsLeft = user.apiLimit - user.requestsToday;
+            userRequestsLeftSpan.textContent = `${requestsLeft < 0 ? 0 : requestsLeft} / ${user.apiLimit}`;
+            apiBaseUrlInput.value = `${window.location.origin}/api`;
+        }
+
+        document.getElementById('copyApiKeyBtn').addEventListener('click', () => copyToClipboard(userApiKeyInput, 'API Key'));
+        document.getElementById('copyBaseUrlBtn').addEventListener('click', () => copyToClipboard(apiBaseUrlInput, 'Base URL API'));
+        
+        function copyToClipboard(inputElement, typeName) {
+            inputElement.select();
+            inputElement.setSelectionRange(0, 99999); 
+            try {
+                document.execCommand('copy');
+                showMessageDashboard(`${typeName} berhasil disalin!`, 'success');
+            } catch (err) {
+                showMessageDashboard(`Gagal menyalin ${typeName}.`, 'error');
+            }
+            window.getSelection().removeAllRanges();
+        }
+
+        document.getElementById('regenerateApiKeyBtn').addEventListener('click', async () => {
+            if (!confirm('Apakah Anda yakin ingin membuat API Key baru? API Key lama akan tidak berlaku.')) return;
+            const token = localStorage.getItem('wanzofcToken');
+            if (!token) return;
+            try {
+                const response = await fetch('/api/user/regenerate-apikey', {
+                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    userApiKeyInput.value = data.apiKey;
+                    const storedUser = JSON.parse(localStorage.getItem('wanzofcUser'));
+                    if (storedUser) {
+                        storedUser.apiKey = data.apiKey;
+                        localStorage.setItem('wanzofcUser', JSON.stringify(storedUser));
+                        currentUserApiKey = data.apiKey;
+                    }
+                    showMessageDashboard('API Key berhasil diperbarui!', 'success');
+                    filterEndpoints();
+                } else {
+                    showMessageDashboard(data.message || 'Gagal memperbarui API Key.', 'error');
+                }
+            } catch (error) { showMessageDashboard('Error: Gagal memperbarui API Key.', 'error'); }
+        });
+
+        let currentApiBaseUrl = '';
+        let currentUserApiKey = '';
+
+        const allEndpoints = {
+            aiTools: [
+                { method: 'GET', path: '/hydromind?text=TEXT_PROMPT&model=MODEL_AI&apiKey=YOUR_API_KEY', title: 'AI Hydromind', description: 'Chat dengan AI Hydromind. Model: GPT-4, Llama, dll.'},
+                { method: 'GET', path: '/gemini-image?prompt=DESKRIPSI_UNTUK_GAMBAR&url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Gemini Image Analysis', description: 'Analisis gambar menggunakan model Gemini.'},
+                { method: 'GET', path: '/luminai?text=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'AI Luminai', description: 'Chat dengan AI Luminai.'},
+                { method: 'GET', path: '/deepseek?prompt=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'Deepseek AI', description: 'Chat dengan model AI Deepseek.'},
+                { method: 'GET', path: '/gemini?prompt=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'Gemini Chat', description: 'Chat dengan model AI Gemini.'},
+                { method: 'GET', path: '/gpt4-1?prompt=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'GPT-4.1', description: 'Chat dengan model GPT-4.1 (via GitHub AI).'},
+                { method: 'GET', path: '/gpt4-o?prompt=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'GPT-4 Turbo', description: 'Chat dengan model GPT-4 Turbo (via GitHub AI).'},
+                { method: 'GET', path: '/llama?prompt=TEXT_PROMPT&apiKey=YOUR_API_KEY', title: 'Meta Llama', description: 'Chat dengan model AI Meta Llama.'},
+                { method: 'GET', path: '/whisper?url=URL_AUDIO_MP3&apiKey=YOUR_API_KEY', title: 'Whisper Audio Transcription', description: 'Transkripsi file audio ke teks menggunakan Whisper.'}
+            ],
+            downloader: [
+                { method: 'GET', path: '/bibli?query=URL_Bstation_Video_ATAU_Judul_Pencarian&apiKey=YOUR_API_KEY', title: 'Bstation (Bilibili.tv)', description: 'Download atau cari video dari Bilibili.tv.'},
+                { method: 'GET', path: '/douyin?url=URL_Douyin_Video_ATAU_Kata_Kunci&apiKey=YOUR_API_KEY', title: 'Douyin (TikTok China)', description: 'Download atau cari video dari Douyin.'},
+                { method: 'GET', path: '/mediafire?url=URL_MediaFire_File&apiKey=YOUR_API_KEY', title: 'MediaFire Downloader', description: 'Download file dari MediaFire.'},
+                { method: 'GET', path: '/instagram?url=URL_Instagram_Post&apiKey=YOUR_API_KEY', title: 'Instagram Downloader', description: 'Download foto atau video dari Instagram.'},
+                { method: 'GET', path: '/spotify?url=URL_Spotify_Lagu&apiKey=YOUR_API_KEY', title: 'Spotify Downloader', description: 'Download lagu dari Spotify.'},
+                { method: 'GET', path: '/twitter?url=URL_Twitter_Video&apiKey=YOUR_API_KEY', title: 'Twitter Video Downloader', description: 'Download video dari Twitter (X).'},
+                { method: 'GET', path: '/ytmp4?url=URL_YouTube_Video&apiKey=YOUR_API_KEY', title: 'YouTube MP4', description: 'Download video YouTube dalam format MP4.'},
+                { method: 'GET', path: '/ytmp3?url=URL_YouTube_Video&apiKey=YOUR_API_KEY', title: 'YouTube MP3', description: 'Download audio dari video YouTube dalam format MP3.'},
+                { method: 'GET', path: '/tiktok?url=URL_TikTok_Video&apiKey=YOUR_API_KEY', title: 'TikTok Downloader (TikWM)', description: 'Download video TikTok tanpa watermark via TikWM.'}
+            ],
+            imageManipulation: [
+                { method: 'GET', path: '/toanime?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Image to Anime', description: 'Ubah foto menjadi gaya anime (PixNova).'},
+                { method: 'GET', path: '/tozombie?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Image to Zombie', description: 'Ubah foto menjadi gaya zombie (PixNova).'},
+                { method: 'GET', path: '/text2img?prompt=DESKRIPSI_GAMBAR_DALAM_BHS_INGGRIS&apiKey=YOUR_API_KEY', title: 'Text to Image', description: 'Buat gambar dari deskripsi teks (TextToImage.org).'},
+                { method: 'GET', path: '/enhance?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Image Enhance (Remini)', description: 'Tingkatkan kualitas gambar secara otomatis (PxPic).'},
+                { method: 'GET', path: '/upscale?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Image Upscale (Remini)', description: 'Perbesar resolusi gambar dengan AI (PxPic).'},
+                { method: 'GET', path: '/restore?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Image Restore (Remini)', description: 'Pulihkan foto lama atau yang rusak (PxPic).'},
+                { method: 'GET', path: '/colorize?url=URL_GAMBAR_HITAM_PUTIH&apiKey=YOUR_API_KEY', title: 'Image Colorize (Remini)', description: 'Warnai foto hitam putih secara otomatis (PxPic).'},
+                { method: 'GET', path: '/removebg?url=URL_GAMBAR&apiKey=YOUR_API_KEY', title: 'Remove Background (Remini)', description: 'Hapus background dari sebuah gambar (PxPic).'}
+            ],
+            searchAndInfo: [
+                { method: 'GET', path: '/googlesearch?q=KATA_KUNCI_PENCARIAN&apiKey=YOUR_API_KEY', title: 'Google Search (Mojeek)', description: 'Lakukan pencarian Google (melalui Mojeek).'},
+                { method: 'GET', path: '/pinterest?query=KATA_KUNCI_ATAU_URL_PIN&apiKey=YOUR_API_KEY', title: 'Pinterest Search/Download', description: 'Cari gambar atau download dari Pinterest.'},
+                { method: 'GET', path: '/genius?q=JUDUL_LAGU_ATAU_ARTIS&apiKey=YOUR_API_KEY', title: 'Lirik Lagu (Genius)', description: 'Cari lirik lagu berdasarkan judul atau artis via Genius.'},
+                { method: 'GET', path: '/genshinstalk?q=UID_GENSHIN_IMPACT&apiKey=YOUR_API_KEY', title: 'Genshin Impact Stalk', description: 'Lihat profil pemain Genshin Impact (Enka.Network).'},
+                { method: 'GET', path: '/igstalk?q=USERNAME_INSTAGRAM&apiKey=YOUR_API_KEY', title: 'Instagram Stalk', description: 'Lihat informasi profil publik Instagram.'},
+                { method: 'GET', path: '/heroml?q=NAMA_HERO_MOBILE_LEGENDS&apiKey=YOUR_API_KEY', title: 'Hero Mobile Legends Detail', description: 'Dapatkan detail hero Mobile Legends (Fandom Wiki).'}
+            ]
+        };
+        let activeTabName = Object.keys(allEndpoints)[0];
+
+        function generateTabs() {
+            apiTabsContainer.innerHTML = '';
+            Object.keys(allEndpoints).forEach((tabKey, index) => {
+                const tabButton = document.createElement('button');
+                tabButton.className = 'nav-tab';
+                tabButton.textContent = tabKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                if (index === 0) {
+                    tabButton.classList.add('active');
+                }
+                tabButton.onclick = () => switchTab(tabButton, tabKey);
+                apiTabsContainer.appendChild(tabButton);
+            });
+        }
+
+        function renderEndpoints(endpoints) {
+            const container = document.getElementById('endpoint-cards');
+            container.innerHTML = '';
+            if (!endpoints || endpoints.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#777;">Tidak ada endpoint di kategori ini.</p>';
+                return;
+            }
+            endpoints.forEach(ep => {
+                const card = document.createElement('a');
+                const fullUrlWithPath = ep.path.replace('YOUR_API_KEY', currentUserApiKey || 'API_KEY_ANDA');
+                card.href = `${currentApiBaseUrl}${fullUrlWithPath}`;
+                card.className = 'endpoint-card';
+                card.target = '_blank';
+                card.rel = 'noopener noreferrer';
+                card.innerHTML = `
+                    <div class="endpoint-header">
+                        <span class="method-badge">${ep.method}</span>
+                        <span class="endpoint-path">${ep.path.replace('YOUR_API_KEY', '<apiKey>')}</span>
+                        <span class="arrow-icon"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg></span>
+                    </div>
+                    <h3 class="endpoint-title">${ep.title}</h3>
+                    <p class="endpoint-description">${ep.description}</p>`;
+                container.appendChild(card);
+            });
+        }
+
+        function filterEndpoints() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const currentEndpoints = allEndpoints[activeTabName] || [];
+            const filtered = currentEndpoints.filter(ep => 
+                ep.title.toLowerCase().includes(searchQuery) || 
+                ep.description.toLowerCase().includes(searchQuery) ||
+                ep.path.toLowerCase().includes(searchQuery)
+            );
+            renderEndpoints(filtered);
+        }
+
+        function switchTab(clickedTab, tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            clickedTab.classList.add('active');
+            activeTabName = tabName;
+            filterEndpoints();
+        }
+        
+        const profileDropdownTrigger = document.getElementById('profileDropdownTrigger');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        if (profileDropdownTrigger && profileDropdownMenu) {
+            profileDropdownTrigger.addEventListener('click', function(event) {
+                event.preventDefault();
+                profileDropdownMenu.classList.toggle('show');
+            });
+            window.addEventListener('click', function(event) {
+                if (profileDropdownContainer.style.display !== 'none' && !profileDropdownTrigger.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
+                    profileDropdownMenu.classList.remove('show');
+                }
+            });
+        }
+
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                localStorage.removeItem('wanzofcToken');
+                localStorage.removeItem('wanzofcUser');
+                window.location.href = '/';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            generateTabs();
+            const user = await fetchUserProfile();
+            if (user) {
+                populateDashboard(user);
+                currentUserApiKey = user.apiKey; 
+                currentApiBaseUrl = apiBaseUrlInput.value; 
+                
+                const firstTabKey = Object.keys(allEndpoints)[0];
+                const firstTabButton = apiTabsContainer.querySelector('.nav-tab');
+                if (firstTabButton) {
+                     switchTab(firstTabButton, firstTabKey);
+                }
+                document.getElementById('search-input').addEventListener('input', filterEndpoints);
+            }
+        });
+    </script>
+</body>
+</html>

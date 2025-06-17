@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WANZOFC TECH - Daftar Akun</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif; margin: 0; background-color: #1e1e2f; color: #fff;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+        }
+        .register-container {
+            background-color: #2a2a3f; padding: 35px 30px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 450px; text-align: center;
+            position: relative; /* Untuk positioning animasi */
+        }
+        .register-container .logo {
+            font-size: 2rem; font-weight: bold; color: #4e8cff; margin-bottom: 20px;
+            text-decoration: none; display: block;
+        }
+        .register-container h2 { margin-bottom: 20px; font-size: 1.8rem; color: #f0f0f0; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #b0b0b0; }
+        .form-group input {
+            width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid #444;
+            background-color: #1e1e2f; color: #fff; font-size: 1rem; box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus { outline: none; border-color: #4e8cff; }
+        .register-button {
+            width: 100%; padding: 13px; background-color: #4e8cff; color: #fff; border: none;
+            border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            transition: background-color 0.3s ease; margin-top: 10px;
+        }
+        .register-button:hover { background-color: #3a75e0; }
+        .register-button:disabled { background-color: #555; cursor: not-allowed; }
+        .extra-links { margin-top: 20px; font-size: 0.9rem; }
+        .extra-links a { color: #4e8cff; text-decoration: none; }
+        .extra-links a:hover { text-decoration: underline; }
+        .message { margin-bottom: 15px; padding: 10px; border-radius: 5px; font-size: 0.9rem; }
+        .message.error { background-color: #ff4d4d; color: white; }
+        .message.success { background-color: #4CAF50; color: white; }
+        footer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #777;}
+        #passwordAnimationContainerRegister { /* Style untuk animasi */
+            position: absolute; 
+            top: -170px; /* Sesuaikan agar pas di atas heading, tergantung tinggi animasi */
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10; 
+            display: none;
+            width:130px;
+            height:160px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div id="passwordAnimationContainerRegister">
+             <div><a href="http://permathic.blogspot.co.id/" target="_blank"><img border="0" src="http://s.myniceprofile.com/myspacepic/656/th/65649.gif" title="My widget" alt="animasi bergerak gif" /></a><small><center><a href="http://permathic.blogspot.com/2012/04/kumpulan-widget-animasi-yang-lucu-dan.html" target="_blank" title="WANZOFC NARUTO">My Widget</a></center></small></div>
+        </div>
+        <a href="/" class="logo">WANZOFC TECH</a>
+        <h2>Buat Akun Baru</h2>
+        <div id="message-area" class="message" style="display: none;"></div>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required minlength="3">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Konfirmasi Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required minlength="6">
+            </div>
+            <button type="submit" class="register-button" id="registerButton">Daftar</button>
+        </form>
+        <div class="extra-links">
+            Sudah punya akun? <a href="/login">Login di sini</a>
+        </div>
+    </div>
+    <footer>© <span id="year"></span> WANZOFC TECH</footer>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        const registerForm = document.getElementById('registerForm');
+        const registerButton = document.getElementById('registerButton');
+        const messageArea = document.getElementById('message-area');
+        const passwordInputRegister = document.getElementById('password');
+        const confirmPasswordInputRegister = document.getElementById('confirm-password');
+        const animationContainerRegister = document.getElementById('passwordAnimationContainerRegister');
+        let animationTimeoutRegister;
+
+        function showPasswordAnimation() {
+            if (animationContainerRegister) animationContainerRegister.style.display = 'block';
+            clearTimeout(animationTimeoutRegister);
+            animationTimeoutRegister = setTimeout(() => {
+                if (animationContainerRegister) animationContainerRegister.style.display = 'none';
+            }, 2000);
+        }
+        function hidePasswordAnimation() {
+            clearTimeout(animationTimeoutRegister);
+            if (animationContainerRegister) animationContainerRegister.style.display = 'none';
+        }
+
+        if (passwordInputRegister) {
+            passwordInputRegister.addEventListener('input', showPasswordAnimation);
+            passwordInputRegister.addEventListener('blur', hidePasswordAnimation);
+        }
+        if (confirmPasswordInputRegister) {
+            confirmPasswordInputRegister.addEventListener('input', showPasswordAnimation);
+            confirmPasswordInputRegister.addEventListener('blur', hidePasswordAnimation);
+        }
+
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            registerButton.disabled = true;
+            registerButton.textContent = 'Memproses...';
+            messageArea.style.display = 'none';
+            if (animationContainerRegister) animationContainerRegister.style.display = 'none';
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                messageArea.textContent = 'Password dan Konfirmasi Password tidak cocok!';
+                messageArea.className = 'message error';
+                messageArea.style.display = 'block';
+                registerButton.disabled = false;
+                registerButton.textContent = 'Daftar';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('wanzofcToken', data.token);
+                    localStorage.setItem('wanzofcUser', JSON.stringify(data.user));
+                    messageArea.textContent = 'Registrasi berhasil! Mengarahkan ke dashboard...';
+                    messageArea.className = 'message success';
+                    messageArea.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    messageArea.textContent = data.message || 'Registrasi gagal. Periksa kembali input Anda.';
+                    messageArea.className = 'message error';
+                    messageArea.style.display = 'block';
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Daftar';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageArea.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                messageArea.className = 'message error';
+                messageArea.style.display = 'block';
+                registerButton.disabled = false;
+                registerButton.textContent = 'Daftar';
+            }
+        });
+    </script>
+</body>
+</html>
