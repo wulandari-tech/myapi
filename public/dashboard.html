@@ -13,53 +13,51 @@
             overflow-x: hidden; display: flex; flex-direction: column;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; flex-grow: 1; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
-        .logo { font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 1px; position: relative; text-decoration: none;}
-        .logo::before { content: "⚡"; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 16px; color: #ffffff;}
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 60px; 
+            flex-wrap: wrap;
+        }
+        .logo { 
+            font-size: 28px; font-weight: 700; color: #ffffff; 
+            letter-spacing: 1px; position: relative; text-decoration: none;
+            margin-right: auto; 
+        }
+        .logo::before { 
+            content: "⚡"; position: absolute; top: -8px; left: 50%; 
+            transform: translateX(-50%); font-size: 16px; color: #ffffff;
+        }
         
-        .profile-dropdown { position: relative; display: inline-block; }
-        .profile-icon-trigger {
-            width: 45px; height: 45px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none;
-            font-size: 20px; transition: all 0.2s ease; cursor: pointer;
+        .header-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .profile-icon-trigger:hover { background: #333; transform: scale(1.05); }
-        .profile-icon-trigger svg { width: 22px; height: 22px; fill: currentColor; }
-        
-        .profile-dropdown-menu {
-            display: none; 
-            position: absolute; 
-            right: 0; 
-            top: calc(100% + 10px); 
-            background-color: #1c1c1c;
-            min-width: 220px; 
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.4); 
-            z-index: 100;
-            border-radius: 8px; 
-            border: 1px solid #444; 
-            overflow: hidden;
-            transform-origin: top right; 
-            opacity: 0;
-            transform: scale(0.95) translateY(-10px);
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        .header-nav-links a {
+            color: #00aaff;
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
-        .profile-dropdown-menu.show { 
-            display: block; 
-            opacity: 1;
-            transform: scale(1) translateY(0);
+        .header-nav-links a:hover {
+            background-color: rgba(0, 170, 255, 0.1);
+            color: #3db8ff;
         }
-        .profile-dropdown-menu .dropdown-item {
-            color: #e0e0e0; padding: 14px 20px; text-decoration: none; display: block;
-            font-size: 15px; transition: background-color 0.2s ease, color 0.2s ease;
-            border-bottom: 1px solid #333;
+        .header-nav-links a.cta-link {
+            border: 1px solid #00aaff;
         }
-        .profile-dropdown-menu .dropdown-item:last-child {
-            border-bottom: none;
+        .header-nav-links a.logout-link {
+            color: #ff4d4d;
         }
-        .profile-dropdown-menu .dropdown-item:hover { 
-            background-color: #007bff; 
-            color: #ffffff; 
+         .header-nav-links a.logout-link:hover {
+            background-color: rgba(255, 77, 77, 0.1);
+            color: #ff6b6b;
         }
+
 
         .auth-message { text-align: center; font-size: 1.2rem; color: #ffc107; padding: 20px; background-color: #332701; border-radius: 8px; margin-top: 50px;}
         .auth-message a { color: #00aaff; text-decoration: underline;}
@@ -180,6 +178,8 @@
         @media (max-width: 992px) { 
             .nav-tabs { justify-content: center; }
             .nav-tab { font-size: 13px; padding: 12px 8px;}
+            .header { flex-direction: column; align-items: flex-start; gap: 15px;}
+            .header-nav-links { width: 100%; justify-content: flex-end;}
         }
         @media (max-width: 768px) {
             .main-title { font-size: 36px; }
@@ -192,6 +192,8 @@
             .nav-tabs { flex-direction: column; gap: 5px; }
             .endpoint-path { font-size: 13px; }
             .endpoint-title { font-size: 17px; }
+            .header-nav-links { justify-content: center; flex-wrap: wrap;}
+            .header-nav-links a { margin-bottom: 5px;}
         }
     </style>
 </head>
@@ -199,19 +201,16 @@
     <div class="container">
         <div class="header animate-on-scroll" data-gsap-delay="0.1">
             <a href="/dashboard" class="logo">WANZOFC TECH</a>
-            <div class="profile-dropdown" id="profileDropdownContainer" style="display: none;">
-                <a href="#" class="profile-icon-trigger" id="profileDropdownTrigger" title="Menu Pengguna">
-                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
-                </a>
-                <div class="profile-dropdown-menu" id="profileDropdownMenu">
-                    <a href="/pricing" class="dropdown-item">✨ Upgrade Akun</a>
-                    <a href="/profile" class="dropdown-item">⚙️ Profile Saya</a>
-                    <a href="#" class="dropdown-item" id="logoutButton">🚪 Logout</a>
+            <div class="header-nav-links" id="headerNavLinksContainer">
+                <div id="loggedInUserLinks" style="display: none;">
+                    <a href="/pricing" title="Upgrade Akun">✨ Upgrade</a>
+                    <a href="/profile" title="Profile Saya">⚙️ Profile</a>
+                    <a href="#" id="logoutButtonHeader" class="logout-link" title="Logout">🚪 Logout</a>
                 </div>
-            </div>
-            <div id="loginRegisterLinks" style="display: block;">
-                <a href="/login" style="color: #00aaff; text-decoration: none; margin-right: 15px;">Login</a>
-                <a href="/register" style="color: #00aaff; text-decoration: none; padding: 8px 15px; border: 1px solid #00aaff; border-radius: 5px;">Register</a>
+                <div id="guestUserLinks" style="display: block;">
+                    <a href="/login">Login</a>
+                    <a href="/register" class="cta-link">Register</a>
+                </div>
             </div>
         </div>
 
@@ -337,8 +336,11 @@
         const userRequestsLeftSpan = document.getElementById('userRequestsLeft');
         const planExpirationRow = document.getElementById('planExpirationRow');
         const userPlanExpirationSpan = document.getElementById('userPlanExpiration');
-        const profileDropdownContainer = document.getElementById('profileDropdownContainer');
-        const loginRegisterLinks = document.getElementById('loginRegisterLinks');
+        
+        const loggedInUserLinks = document.getElementById('loggedInUserLinks');
+        const guestUserLinks = document.getElementById('guestUserLinks');
+        const logoutButtonHeader = document.getElementById('logoutButtonHeader');
+
         const messageAreaDashboard = document.getElementById('message-area-dashboard');
         const apiBaseUrlInput = document.getElementById('apiBaseUrl');
         const apiTabsContainer = document.getElementById('apiTabs');
@@ -364,8 +366,8 @@
             if (!token) {
                 authMessageContainer.innerHTML = `<p class="auth-message">Anda belum login. Silakan <a href="/login">Login</a> atau <a href="/register">Register</a> untuk mengakses dashboard.</p>`;
                 gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
-                profileDropdownContainer.style.display = 'none';
-                loginRegisterLinks.style.display = 'block';
+                loggedInUserLinks.style.display = 'none';
+                guestUserLinks.style.display = 'flex';
                 mainDashboardContent.style.display = 'none';
                 return null;
             }
@@ -374,8 +376,8 @@
                 const data = await response.json();
                 if (data.success && data.user) {
                     mainDashboardContent.style.display = 'block';
-                    profileDropdownContainer.style.display = 'inline-block';
-                    loginRegisterLinks.style.display = 'none';
+                    loggedInUserLinks.style.display = 'flex';
+                    guestUserLinks.style.display = 'none';
                     currentUserData = data.user;
                     localStorage.setItem('wanzofcUser', JSON.stringify(data.user));
                     return data.user;
@@ -383,16 +385,16 @@
                     localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
                     authMessageContainer.innerHTML = `<p class="auth-message">Sesi Anda telah berakhir. Silakan <a href="/login">Login</a> kembali.</p>`;
                     gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
-                    profileDropdownContainer.style.display = 'none';
-                    loginRegisterLinks.style.display = 'block';
+                    loggedInUserLinks.style.display = 'none';
+                    guestUserLinks.style.display = 'flex';
                     mainDashboardContent.style.display = 'none';
                     return null;
                 }
             } catch (error) {
                 authMessageContainer.innerHTML = `<p class="auth-message">Gagal memuat data. Coba refresh atau <a href="/login">Login</a> kembali.</p>`;
                 gsap.fromTo(authMessageContainer, {opacity:0, y:20}, {opacity:1, y:0, duration:0.5});
-                profileDropdownContainer.style.display = 'none';
-                loginRegisterLinks.style.display = 'block';
+                loggedInUserLinks.style.display = 'none';
+                guestUserLinks.style.display = 'flex';
                 mainDashboardContent.style.display = 'none';
                 return null;
             }
@@ -616,47 +618,8 @@
             filterEndpoints();
         }
         
-        const profileDropdownTrigger = document.getElementById('profileDropdownTrigger');
-        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
-        if (profileDropdownTrigger && profileDropdownMenu) {
-            profileDropdownTrigger.addEventListener('click', function(event) {
-                event.preventDefault();
-                const isShown = profileDropdownMenu.classList.contains('show');
-                if (!isShown) {
-                    profileDropdownMenu.style.display = 'block'; 
-                    gsap.fromTo(profileDropdownMenu, 
-                        {opacity:0, scale:0.95, y:-10}, 
-                        {opacity:1, scale:1, y:0, duration:0.2, ease:"power2.out", onComplete: () => {
-                            profileDropdownMenu.classList.add('show');
-                        }}
-                    );
-                } else {
-                    gsap.to(profileDropdownMenu, 
-                        {opacity:0, scale:0.95, y:-10, duration:0.2, ease:"power2.in", onComplete: () => {
-                            profileDropdownMenu.classList.remove('show'); 
-                            profileDropdownMenu.style.display = 'none';
-                        }}
-                    );
-                }
-            });
-            window.addEventListener('click', function(event) {
-                if (profileDropdownContainer.style.display !== 'none' && 
-                    !profileDropdownTrigger.contains(event.target) && 
-                    !profileDropdownMenu.contains(event.target) &&
-                    profileDropdownMenu.classList.contains('show')) {
-                     gsap.to(profileDropdownMenu, 
-                        {opacity:0, scale:0.95, y:-10, duration:0.2, ease:"power2.in", onComplete: () => {
-                            profileDropdownMenu.classList.remove('show'); 
-                            profileDropdownMenu.style.display = 'none';
-                        }}
-                    );
-                }
-            });
-        }
-
-        const logoutButton = document.getElementById('logoutButton');
-        if (logoutButton) {
-            logoutButton.addEventListener('click', function(event) {
+        if (logoutButtonHeader) {
+            logoutButtonHeader.addEventListener('click', function(event) {
                 event.preventDefault();
                 localStorage.removeItem('wanzofcToken'); localStorage.removeItem('wanzofcUser');
                 window.location.href = '/';
