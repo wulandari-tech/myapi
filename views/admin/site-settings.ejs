@@ -1,0 +1,20 @@
+<%- include('../partials/admin-header', { title: title, user: user }) %>
+<div class="admin-content-container p-6">
+    <h1 class="text-2xl font-semibold mb-6">Pengaturan Situs</h1>
+    <div class="admin-card max-w-lg">
+        <div class="admin-card-body">
+            <form action="/admin/settings/site" method="POST">
+                <div class="form-group mb-4">
+                    <label for="siteName" class="block text-sm font-medium">Nama Situs:</label>
+                    <input type="text" name="siteName" id="siteName" value="<%= settings.siteName || 'Wanzofc API' %>" class="form-input w-full">
+                </div>
+                <div class="form-group mb-4">
+                    <input type="checkbox" name="maintenanceMode" id="maintenanceMode" class="form-checkbox" <%= settings.maintenanceMode ? 'checked' : '' %>>
+                    <label for="maintenanceMode" class="ml-2 text-sm font-medium">Aktifkan Mode Maintenance</label>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Simpan Pengaturan</button>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include('../partials/admin-footer') %>

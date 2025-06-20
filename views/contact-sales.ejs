@@ -1,0 +1,156 @@
+<%- include('./partials/header', { title: title || 'Hubungi Sales' }) %>
+
+<style>
+    .chat-container { max-width: 700px; margin: 2rem auto; display: flex; flex-direction: column; height: calc(100vh - 200px); }
+    html[data-theme='dark'] .chat-box { background-color: var(--card-dark); border: 1px solid var(--border-dark); }
+    html[data-theme='light'] .chat-box { background-color: var(--card-light); border: 1px solid var(--border-light); }
+    .chat-box { flex-grow: 1; padding: 1rem; overflow-y: auto; border-radius: 0.5rem 0.5rem 0 0; }
+    .chat-message { margin-bottom: 0.75rem; padding: 0.5rem 1rem; border-radius: 0.5rem; max-width: 80%; word-wrap: break-word; }
+    .chat-message.user { background-color: var(--accent-color); color: var(--text-light); margin-left: auto; border-bottom-right-radius: 0; }
+    .chat-message.admin { background-color: var(--primary-color); color: var(--text-light); margin-right: auto; border-bottom-left-radius: 0; }
+    html[data-theme='light'] .chat-message.user { background-color: var(--accent-color); color: var(--text-light); }
+    html[data-theme='light'] .chat-message.admin { background-color: var(--primary-color); color: var(--text-light); }
+
+    .chat-input-area { display: flex; padding: 1rem; }
+    html[data-theme='dark'] .chat-input-area { background-color: var(--card-dark); border-top: 1px solid var(--border-dark); }
+    html[data-theme='light'] .chat-input-area { background-color: var(--card-light); border-top: 1px solid var(--border-light); }
+    #chatMessageInput { flex-grow: 1; padding: 0.75rem; border-radius: 0.375rem 0 0 0.375rem; border: 1px solid; margin-right: -1px; }
+    html[data-theme='dark'] #chatMessageInput { background-color: var(--bg-dark-secondary); border-color: var(--border-dark); color: var(--text-light); }
+    html[data-theme='light'] #chatMessageInput { background-color: var(--bg-light-secondary); border-color: var(--border-light); color: var(--text-dark); }
+    #sendChatMessageBtn { padding: 0.75rem 1.5rem; border-radius: 0 0.375rem 0.375rem 0; }
+    .chat-status { text-align: center; padding: 0.5rem; font-size: 0.9em; opacity: 0.8; }
+    #startChatForm { margin-bottom: 1rem; padding: 1rem; }
+    html[data-theme='dark'] #startChatForm { background-color: var(--card-dark); border-radius: 0.5rem; }
+    html[data-theme='light'] #startChatForm { background-color: var(--card-light); border-radius: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6">Hubungi Tim Sales Kami</h1>
+
+    <div id="startChatContainer">
+        <form id="startChatForm" class="max-w-md mx-auto">
+            <div class="mb-4">
+                <label for="userNameInput" class="block text-sm font-medium mb-1">Nama Anda:</label>
+                <input type="text" id="userNameInput" class="form-input w-full" value="<%= user ? (user.profile.displayName || user.username) : '' %>" required placeholder="Masukkan nama Anda">
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Mulai Chat</button>
+        </form>
+    </div>
+
+    <div id="chatInterfaceContainer" class="chat-container hidden">
+        <div id="chatBox" class="chat-box">
+        </div>
+        <div id="chatStatus" class="chat-status">Menghubungkan...</div>
+        <form id="chatInputForm" class="chat-input-area">
+            <input type="text" id="chatMessageInput" class="form-input" placeholder="Ketik pesan Anda..." autocomplete="off" required>
+            <button type="submit" id="sendChatMessageBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = io();
+    const startChatContainer = document.getElementById('startChatContainer');
+    const startChatForm = document.getElementById('startChatForm');
+    const userNameInput = document.getElementById('userNameInput');
+    const chatInterfaceContainer = document.getElementById('chatInterfaceContainer');
+    const chatBox = document.getElementById('chatBox');
+    const chatStatus = document.getElementById('chatStatus');
+    const chatInputForm = document.getElementById('chatInputForm');
+    const chatMessageInput = document.getElementById('chatMessageInput');
+
+    let currentUserId = null; // Akan diisi dengan user ID jika login, atau socket.id jika guest
+
+    function appendMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', message.sender);
+        messageElement.textContent = message.text;
+        // Tambahkan timestamp jika ada
+        if (message.timestamp) {
+            const timeElement = document.createElement('span');
+            timeElement.style.fontSize = '0.7em';
+            timeElement.style.opacity = '0.7';
+            timeElement.style.display = 'block';
+            timeElement.style.marginTop = '0.25em';
+            timeElement.textContent = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageElement.appendChild(timeElement);
+        }
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    startChatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = userNameInput.value.trim();
+        if (name) {
+            socket.emit('userStartChat', { name: name });
+            startChatContainer.classList.add('hidden');
+            chatInterfaceContainer.classList.remove('hidden');
+            chatStatus.textContent = 'Menunggu respons dari tim sales...';
+        }
+    });
+
+    chatInputForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = chatMessageInput.value.trim();
+        if (text) {
+            socket.emit('userSendMessage', { text: text });
+            // appendMessage({ sender: 'user', text: text, timestamp: new Date() }); // Echo lokal, atau tunggu dari server
+            chatMessageInput.value = '';
+        }
+    });
+
+    socket.on('connect', () => {
+        // currentUserId = socket.id; // Ini akan menjadi user ID jika pengguna anonim
+        chatStatus.textContent = 'Terhubung. Silakan isi nama Anda untuk memulai chat.';
+        // Jika user sudah login, bisa langsung emit 'userStartChat'
+        <% if (user) { %>
+            // userNameInput.value = "<%= user.profile.displayName || user.username %>";
+            // Tidak otomatis start, biarkan user klik tombol "Mulai Chat"
+        <% } %>
+    });
+    
+    socket.on('chatHistory', (messages) => {
+        chatBox.innerHTML = ''; // Bersihkan chat box dulu
+        messages.forEach(msg => appendMessage(msg));
+    });
+
+    socket.on('newMessage', (data) => {
+        appendMessage(data.message);
+        chatStatus.textContent = 'Anda memiliki pesan baru.';
+        if (document.hidden) { // Jika tab tidak aktif, beri notifikasi judul
+            // Implementasi notifikasi judul sederhana
+            document.title = "💬 Pesan Baru! - " + "<%= title || 'Wanzofc API' %>";
+        }
+        socket.emit('userMarkAsRead'); // Otomatis tandai dibaca saat pesan diterima & tab aktif
+    });
+
+    socket.on('messageEcho', (message) => { // Untuk menampilkan pesan user sendiri setelah dikirim ke server
+        appendMessage(message);
+    });
+
+    socket.on('chatClosedByAdmin', (data) => {
+        appendMessage({ sender: 'system', text: data.message, timestamp: new Date() });
+        chatStatus.textContent = 'Sesi chat telah ditutup.';
+        chatMessageInput.disabled = true;
+        document.getElementById('sendChatMessageBtn').disabled = true;
+    });
+
+    socket.on('disconnect', () => {
+        chatStatus.textContent = 'Koneksi terputus. Mencoba menyambungkan kembali...';
+    });
+    
+    // Ketika tab kembali aktif, reset judul dan tandai pesan dibaca
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            document.title = "<%= title || 'Hubungi Sales - Wanzofc API' %>";
+            socket.emit('userMarkAsRead');
+        }
+    });
+});
+</script>
+
+<%- include('./partials/footer') %>

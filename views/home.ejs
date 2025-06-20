@@ -1,0 +1,73 @@
+<%- include('./partials/header', { title: title }) %>
+
+<div id="particles-js-bg" class="fixed inset-0 z-[-1]"></div>
+
+<section class="hero text-center py-20 px-4 relative min-h-[70vh] flex flex-col items-center justify-center">
+    <h1 class="text-5xl md:text-7xl font-bold mb-6">
+        <i class="fas fa-fire text-accent-color animate-pulse"></i>
+        <span id="typewriter-text" class="text-text-light"></span>
+    </h1>
+    <p class="text-xl md:text-2xl text-text-light mb-10 max-w-2xl mx-auto">
+        Platform REST API modern, cepat, dan handal untuk kebutuhan developer Anda.
+    </p>
+    <div class="space-y-4 md:space-y-0 md:space-x-4">
+        <a href="/auth/register" class="btn btn-primary btn-lg transform hover:scale-105 transition-transform">
+            <i class="fas fa-rocket mr-2"></i> Get Started
+        </a>
+        <a href="/documentation" class="btn btn-secondary btn-lg transform hover:scale-105 transition-transform">
+            <i class="fas fa-book mr-2"></i> Documentation
+        </a>
+        <a href="#try-api-section" class="btn btn-outline-light btn-lg transform hover:scale-105 transition-transform">
+            <i class="fas fa-play-circle mr-2"></i> Try API
+        </a>
+    </div>
+</section>
+
+<section class="py-16 bg-opacity-50 backdrop-blur-md">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center text-text-light mb-12">Fitur Unggulan</h2>
+        <div class="grid md:grid-cols-3 gap-8 text-center">
+            <div class="feature-card">
+                <i class="fas fa-bolt fa-3x text-accent-color mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2 text-text-light">Cepat & Handal</h3>
+                <p class="text-text-light opacity-80">Infrastruktur dirancang untuk kecepatan dan uptime maksimal.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-lock fa-3x text-accent-color mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2 text-text-light">Aman Terpercaya</h3>
+                <p class="text-text-light opacity-80">Autentikasi API Key kuat dan proteksi rate limiting.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cogs fa-3x text-accent-color mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2 text-text-light">Mudah Digunakan</h3>
+                <p class="text-text-light opacity-80">Dokumentasi jelas dan antarmuka yang intuitif.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="try-api-section" class="py-16">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center text-text-light mb-12">Coba API Kami (Contoh)</h2>
+        <div class="card max-w-2xl mx-auto">
+            <div class="card-body">
+                <div class="mb-4">
+                    <label for="api-key-demo" class="block text-sm font-medium text-text-light mb-1">API Key (Opsional):</label>
+                    <input type="text" id="api-key-demo" class="form-input w-full" placeholder="wzfc_xxxxxxxx (kosongkan untuk demo publik)">
+                </div>
+                <button id="try-api-button" class="btn btn-accent w-full">
+                    <i class="fas fa-paper-plane mr-2"></i> Panggil Endpoint Contoh
+                </button>
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold text-text-light mb-2">Response:</h4>
+                    <pre id="api-response-container" class="bg-bg-dark text-text-light p-4 rounded-md overflow-x-auto h-64 syntax-highlight"><code class="language-json">Klik tombol untuk melihat response...</code></pre>
+                    <button id="copy-response-button" class="btn btn-outline-light mt-2 hidden">
+                        <i class="fas fa-copy mr-2"></i> Copy Response
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('./partials/footer') %>

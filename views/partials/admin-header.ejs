@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="<%= locals.userSettings && userSettings.theme ? userSettings.theme : 'dark' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Admin Wanzofc</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin-style.css"> </style>
+</head>
+<body class="font-sans">
+    <div class="admin-layout-grid">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <a href="/admin" class="text-xl font-bold"><i class="fas fa-shield-alt mr-2"></i>Admin Wanzofc</a>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>"><i class="fas fa-tachometer-alt fa-fw mr-2"></i> Dashboard</a>
+                <a href="/admin/users" class="<%= currentPath.startsWith('/admin/users') ? 'active' : '' %>"><i class="fas fa-users fa-fw mr-2"></i> Pengguna</a>
+                <a href="/admin/live-chat" class="<%= currentPath === '/admin/live-chat' ? 'active' : '' %>"><i class="fas fa-headset fa-fw mr-2"></i> Live Chat</a>
+                <a href="/admin/api-logs" class="<%= currentPath === '/admin/api-logs' ? 'active' : '' %>"><i class="fas fa-clipboard-list fa-fw mr-2"></i> Log API</a>
+                <a href="/admin/settings/site" class="<%= currentPath.startsWith('/admin/settings') ? 'active' : '' %>"><i class="fas fa-cog fa-fw mr-2"></i> Pengaturan</a>
+                <hr class="my-3 border-border-color">
+                <a href="/"><i class="fas fa-globe fa-fw mr-2"></i> Lihat Situs</a>
+                <a href="/auth/logout"><i class="fas fa-sign-out-alt fa-fw mr-2"></i> Logout</a>
+            </nav>
+        </aside>
+        <main class="admin-main-content">
+            <header class="admin-main-header">
+                <div>Selamat datang, <%= user.username %>!</div>
+                <button id="theme-toggle-admin" class="btn btn-icon"><i class="fas fa-sun"></i></button>
+            </header>

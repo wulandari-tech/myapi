@@ -1,0 +1,18 @@
+<%- include('../partials/header', { title: title }) %>
+<style>
+    .success-container { max-width: 600px; margin: 2rem auto; padding: 2rem; text-align: center; }
+    html[data-theme='dark'] .success-container { background-color: var(--card-dark); border-radius: 0.5rem; }
+    html[data-theme='light'] .success-container { background-color: var(--card-light); border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
+    .success-icon { font-size: 4rem; color: var(--success-color); margin-bottom: 1rem; }
+</style>
+
+<div class="success-container">
+    <i class="fas fa-check-circle success-icon"></i>
+    <h2>Pembayaran Berhasil!</h2>
+    <p class="mt-2">Terima kasih, <%= transaction.userId.username %>! Pembayaran Anda untuk paket <strong><%= transaction.plan.toUpperCase() %> (<%= transaction.period %>)</strong> telah berhasil diproses.</p>
+    <p>ID Transaksi: <%= transaction.orkutReffId %></p>
+    <p class="mt-4">Plan Anda telah diaktifkan/diperbarui. Anda dapat menikmati fitur premium sekarang.</p>
+    <a href="/dashboard" class="btn btn-primary mt-6">Lanjut ke Dashboard</a>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,85 @@
+<%- include('../partials/admin-header', { title: title, user: user }) %>
+
+<div class="admin-content-container p-6">
+    <h1 class="text-2xl font-semibold mb-6">Dashboard Admin</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="admin-stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-value"><%= stats.totalUsers || 0 %></div>
+            <div class="stat-label">Total Pengguna</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-value"><%= stats.activeSubscriptions || 0 %></div>
+            <div class="stat-label">Langganan Premium Aktif</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon"><i class="fas fa-user-slash"></i></div>
+            <div class="stat-value"><%= stats.suspendedUsers || 0 %></div>
+            <div class="stat-label">Pengguna Suspended</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="stat-value">N/A</div>
+            <div class="stat-label">Request API (24 Jam)</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="admin-card">
+            <div class="admin-card-header">Transaksi Terbaru</div>
+            <div class="admin-card-body">
+                <% if (recentTransactions && recentTransactions.length > 0) { %>
+                    <ul class="divide-y divide-border-color max-h-96 overflow-y-auto">
+                        <% recentTransactions.forEach(tx => { %>
+                            <li class="py-3">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p><strong>ID:</strong> <span class="font-mono text-xs"><%= tx.orkutReffId || 'N/A' %></span></p>
+                                        <p><strong>User:</strong> <%= tx.userId ? (tx.userId.username || 'User Dihapus') : 'N/A' %> (<%= tx.plan || 'N/A' %> - <%= tx.period || 'N/A' %>)</p>
+                                    </div>
+                                    <span class="badge badge-<%= tx.status || 'unknown' %> capitalize"><%= tx.status || 'Unknown' %></span>
+                                </div>
+                                <p><strong>Jumlah:</strong> 
+                                    <% if (typeof tx.amountToPay !== 'undefined' && tx.amountToPay !== null) { %>
+                                        Rp <%= tx.amountToPay.toLocaleString('id-ID') %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </p>
+                                <p class="text-xs opacity-70"><%= tx.createdAt ? new Date(tx.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A' %></p>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p>Tidak ada transaksi terbaru.</p>
+                <% } %>
+            </div>
+        </div>
+
+         <div class="admin-card">
+            <div class="admin-card-header">Broadcast Pengumuman</div>
+            <div class="admin-card-body">
+                <form action="/admin/broadcast" method="POST">
+                    <div class="form-group mb-4">
+                        <label for="broadcastMessage" class="block text-sm font-medium mb-1">Pesan Pengumuman:</label>
+                        <textarea id="broadcastMessage" name="message" rows="4" class="form-input w-full" required placeholder="Ketik pesan Anda di sini..."></textarea>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="targetAudience" class="block text-sm font-medium mb-1">Target Audiens:</label>
+                        <select id="targetAudience" name="targetAudience" class="form-input w-full">
+                            <option value="all">Semua Pengguna</option>
+                            <option value="free">Pengguna Gratis</option>
+                            <option value="pro">Pengguna Pro</option>
+                            <option value="enterprise">Pengguna Enterprise</option>
+                            <option value="lifetime_pro">Pengguna Lifetime Pro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full"><i class="fas fa-paper-plane mr-2"></i> Kirim Broadcast</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../partials/admin-footer') %>

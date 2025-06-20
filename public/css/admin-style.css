@@ -1,0 +1,89 @@
+/* Styling dasar untuk Admin Panel */
+:root { /* Variabel warna bisa diambil dari themeColors di EJS atau didefinisikan di sini */
+    --admin-bg-dark: #1a202c;
+    --admin-sidebar-bg-dark: #2d3748;
+    --admin-card-bg-dark: #2c2c54; /* Sama dengan cardDark biasa */
+    --admin-text-light: #e2e8f0;
+    --admin-border-color-dark: #4a5568;
+    --admin-hover-bg-dark: #4a5568;
+
+    --admin-bg-light: #f7fafc;
+    --admin-sidebar-bg-light: #edf2f7;
+    --admin-card-bg-light: #ffffff;
+    --admin-text-dark: #2d3748;
+    --admin-border-color-light: #e2e8f0;
+    --admin-hover-bg-light: #e2e8f0;
+}
+
+.admin-layout-grid { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+html[data-theme='dark'] .admin-layout-grid { background-color: var(--admin-bg-dark); color: var(--admin-text-light); }
+html[data-theme='light'] .admin-layout-grid { background-color: var(--admin-bg-light); color: var(--admin-text-dark); }
+
+.admin-sidebar { padding: 1.5rem 1rem; }
+html[data-theme='dark'] .admin-sidebar { background-color: var(--admin-sidebar-bg-dark); }
+html[data-theme='light'] .admin-sidebar { background-color: var(--admin-sidebar-bg-light); border-right: 1px solid var(--admin-border-color-light); }
+
+.admin-sidebar-header { margin-bottom: 2rem; }
+.admin-sidebar-header a { text-decoration: none; }
+html[data-theme='dark'] .admin-sidebar-header a { color: var(--admin-text-light); }
+html[data-theme='light'] .admin-sidebar-header a { color: var(--admin-text-dark); }
+
+
+.admin-sidebar-nav a { display: block; padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 0.25rem; text-decoration: none; transition: background-color 0.2s; }
+html[data-theme='dark'] .admin-sidebar-nav a { color: var(--admin-text-light); opacity: 0.8; }
+html[data-theme='light'] .admin-sidebar-nav a { color: var(--admin-text-dark); opacity: 0.8; }
+html[data-theme='dark'] .admin-sidebar-nav a:hover { background-color: var(--admin-hover-bg-dark); opacity: 1; }
+html[data-theme='light'] .admin-sidebar-nav a:hover { background-color: var(--admin-hover-bg-light); opacity: 1; }
+html[data-theme='dark'] .admin-sidebar-nav a.active { background-color: var(--primary-color); color: white; opacity: 1; }
+html[data-theme='light'] .admin-sidebar-nav a.active { background-color: var(--primary-color); color: white; opacity: 1; }
+
+.admin-main-content { overflow-y: auto; }
+.admin-main-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid; margin-bottom: 1.5rem; }
+html[data-theme='dark'] .admin-main-header { border-color: var(--admin-border-color-dark); }
+html[data-theme='light'] .admin-main-header { border-color: var(--admin-border-color-light); background-color: var(--admin-card-bg-light); }
+
+
+.admin-content-container { } /* Padding sudah diatur di EJS */
+
+.admin-card { border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+html[data-theme='dark'] .admin-card { background-color: var(--admin-card-bg-dark); border: 1px solid var(--admin-border-color-dark); }
+html[data-theme='light'] .admin-card { background-color: var(--admin-card-bg-light); border: 1px solid var(--admin-border-color-light); }
+
+.admin-card-header { padding: 1rem 1.5rem; font-size: 1.125rem; font-weight: 600; border-bottom: 1px solid; }
+html[data-theme='dark'] .admin-card-header { border-color: var(--admin-border-color-dark); }
+html[data-theme='light'] .admin-card-header { border-color: var(--admin-border-color-light); }
+
+.admin-card-body { padding: 1.5rem; }
+
+.admin-stat-card { padding: 1.5rem; text-align: center; border-radius: 0.5rem; }
+html[data-theme='dark'] .admin-stat-card { background-color: var(--admin-card-bg-dark); }
+html[data-theme='light'] .admin-stat-card { background-color: var(--admin-card-bg-light); border: 1px solid var(--admin-border-color-light); }
+.admin-stat-card .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent-color); }
+.admin-stat-card .stat-value { font-size: 1.875rem; font-weight: bold; }
+.admin-stat-card .stat-label { font-size: 0.875rem; opacity: 0.8; }
+
+/* Form input di admin */
+.form-input { width: 100%; padding: 0.625rem 1rem; font-size: 0.875rem; border-radius: 0.375rem; border-width: 1px; }
+html[data-theme='dark'] .form-input { background-color: var(--bg-dark-secondary, #2d3748); border-color: var(--border-dark, #4a5568); color: var(--text-light, #e2e8f0); }
+html[data-theme='light'] .form-input { background-color: #fff; border-color: var(--border-light, #e2e8f0); color: var(--text-dark, #2d3748); }
+.form-checkbox { border-radius: 0.25rem; }
+
+/* Badge di admin */
+.badge { display: inline-block; padding: 0.25em 0.6em; font-size: 75%; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0.25rem; color: #fff; }
+.badge-admin { background-color: var(--warning-color); }
+.badge-success { background-color: var(--success-color); }
+.badge-danger { background-color: var(--error-color); }
+.badge-pending { background-color: var(--info-color); }
+.badge-expired { background-color: #718096; } /* gray */
+.badge-paid { background-color: var(--success-color); }
+.badge-failed { background-color: var(--error-color); }
+
+.btn-info { background-color: var(--info-color); color: white; }
+.btn-info:hover { background-color: color-mix(in srgb, var(--info-color) 85%, black); }
+.btn.disabled { opacity: 0.65; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+    .admin-layout-grid { grid-template-columns: 1fr; }
+    .admin-sidebar { display: none; /* Atau implementasi toggle untuk mobile */ }
+    .admin-main-header { margin-bottom: 0; border-bottom: none; }
+}

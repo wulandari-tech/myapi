@@ -1,0 +1,62 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 card p-10">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-text-light">
+                Buat Akun Wanzofc API
+            </h2>
+        </div>
+
+        <form class="mt-8 space-y-6" action="/auth/register" method="POST">
+            <div>
+                <label for="username" class="sr-only">Username</label>
+                <input id="username" name="username" type="text" required class="form-input" placeholder="Username" value="<%= typeof username != 'undefined' ? username : '' %>">
+            </div>
+            <div>
+                <label for="email" class="sr-only">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" required class="form-input" placeholder="Alamat Email" value="<%= typeof email != 'undefined' ? email : '' %>">
+            </div>
+            <div>
+                <label for="password" class="sr-only">Password</label>
+                <input id="password" name="password" type="password" autocomplete="new-password" required class="form-input" placeholder="Password (min. 6 karakter)">
+            </div>
+            <div>
+                <label for="password2" class="sr-only">Confirm Password</label>
+                <input id="password2" name="password2" type="password" autocomplete="new-password" required class="form-input" placeholder="Konfirmasi Password">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-user-plus mr-2"></i> Register
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-card-dark text-gray-400">
+                        Atau daftar dengan
+                    </span>
+                </div>
+            </div>
+            <div class="mt-6">
+                <a href="/auth/google" class="btn btn-google w-full">
+                    <i class="fab fa-google mr-2"></i> Daftar dengan Google
+                </a>
+            </div>
+        </div>
+
+        <p class="mt-6 text-center text-sm text-gray-400">
+            Sudah punya akun?
+            <a href="/auth/login" class="font-medium text-accent-color hover:text-accent-color/80">
+                Login di sini
+            </a>
+        </p>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

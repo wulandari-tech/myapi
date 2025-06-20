@@ -1,0 +1,119 @@
+<%- include('../partials/header', { title: title }) %>
+
+<style>
+    .pending-container { max-width: 600px; margin: 2rem auto; padding: 2rem; text-align: center; }
+    html[data-theme='dark'] .pending-container { background-color: var(--card-dark); border-radius: 0.5rem; }
+    html[data-theme='light'] .pending-container { background-color: var(--card-light); border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
+    .qr-code-image { max-width: 250px; margin: 1.5rem auto; border: 5px solid white; border-radius: 0.25rem; }
+    .countdown-timer { font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; }
+    .status-message { margin-top: 1.5rem; font-style: italic; }
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: var(--accent-color, #FF00E6);
+        animation: spin 1s ease infinite;
+        margin: 1rem auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="pending-container">
+    <h2><i class="fas fa-hourglass-half mr-2"></i>Menunggu Pembayaran</h2>
+    <p class="mt-2">Silakan pindai Kode QRIS di bawah ini untuk menyelesaikan pembayaran Anda.</p>
+    <p>Paket: <strong><%= transaction.plan.toUpperCase() %> (<%= transaction.period %>)</strong></p>
+    <p>Jumlah Pembayaran: <strong>Rp <%= transaction.amountToPay.toLocaleString('id-ID') %></strong></p>
+
+    <% if (transaction.qrImageUrl) { %>
+        <img src="<%= transaction.qrImageUrl %>" alt="Kode QRIS" class="qr-code-image">
+    <% } else { %>
+        <p class="text-error-color">Gagal memuat gambar QRIS. Coba lagi atau hubungi support.</p>
+    <% } %>
+
+    <div class="countdown-timer" id="countdown"></div>
+    <p class="text-sm opacity-70">ID Transaksi: <%= transaction.orkutReffId %></p>
+
+    <div id="payment-status-message" class="status-message">
+        <div class="spinner"></div>
+        Mengecek status pembayaran...
+    </div>
+
+    <a href="/dashboard" class="btn btn-outline-light mt-6">Kembali ke Dashboard</a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const countdownElement = document.getElementById('countdown');
+    const statusMessageElement = document.getElementById('payment-status-message');
+    const transactionId = "<%= transaction._id %>";
+    const expiredAt = new Date("<%= transaction.expiredAt %>").getTime();
+    let pollingInterval;
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = expiredAt - now;
+
+        if (distance < 0) {
+            countdownElement.innerHTML = "WAKTU HABIS";
+            if(pollingInterval) clearInterval(pollingInterval);
+            statusMessageElement.innerHTML = '<p class="text-error-color">Waktu pembayaran telah habis. <a href="/pricing" class="underline">Buat pembayaran baru</a>.</p>';
+            // Optional: Redirect
+            // window.location.href = `/payment/failed/${transactionId}`;
+            return;
+        }
+
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        countdownElement.innerHTML = `Sisa Waktu: ${minutes}m ${seconds}s`;
+    }
+
+    async function checkStatus() {
+        try {
+            const response = await fetch(`/payment/status/${transactionId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.status === 'paid') {
+                    if(pollingInterval) clearInterval(pollingInterval);
+                    statusMessageElement.innerHTML = '<p class="text-success-color"><i class="fas fa-check-circle mr-1"></i> Pembayaran berhasil! Mengalihkan...</p>';
+                    window.location.href = `/payment/success/${transactionId}`;
+                } else if (data.status === 'expired' || data.status === 'failed') {
+                    if(pollingInterval) clearInterval(pollingInterval);
+                    statusMessageElement.innerHTML = `<p class="text-error-color">${data.message} <a href="/pricing" class="underline">Buat pembayaran baru</a>.</p>`;
+                     window.location.href = `/payment/failed/${transactionId}`;
+                } else {
+                    // statusMessageElement.textContent = data.message || 'Masih menunggu pembayaran...'; // Opsional: update pesan
+                }
+            } else {
+                // statusMessageElement.textContent = data.message || 'Gagal mengecek status.'; // Opsional
+            }
+        } catch (error) {
+            console.error('Error polling status:', error);
+            // statusMessageElement.textContent = 'Kesalahan saat mengecek status.'; // Opsional
+        }
+    }
+
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // Langsung cek status saat halaman dimuat
+    setTimeout(checkStatus, 2000); // Beri jeda sedikit
+
+    // Polling setiap beberapa detik
+    pollingInterval = setInterval(checkStatus, 7000); // Cek setiap 7 detik
+
+    // Hentikan interval jika tab tidak aktif untuk menghemat resource (opsional)
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+            if (pollingInterval) clearInterval(pollingInterval);
+        } else {
+            if (pollingInterval) clearInterval(pollingInterval); // Hapus dulu jika ada
+            pollingInterval = setInterval(checkStatus, 7000);
+            checkStatus(); // Cek langsung saat tab kembali aktif
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

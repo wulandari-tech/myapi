@@ -1,0 +1,85 @@
+<%- include('../partials/admin-header', { title: title, user: user }) %>
+
+<div class="admin-content-container p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold">Manajemen Pengguna (<%= totalUsersCount %>)</h1>
+        <div>
+             <form action="/admin/users" method="GET" class="flex">
+                <input type="text" name="search" value="<%= searchQuery %>" placeholder="Cari username, email, apikey..." class="form-input rounded-r-none">
+                <button type="submit" class="btn btn-primary rounded-l-none"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <div class="admin-card-body overflow-x-auto">
+            <table class="w-full text-left table-auto">
+                <thead>
+                    <tr class="border-b border-border-color">
+                        <th class="p-3">Username</th>
+                        <th class="p-3">Email</th>
+                        <th class="p-3">Plan</th>
+                        <th class="p-3">API Key (Sebagian)</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Bergabung</th>
+                        <th class="p-3">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(u => { %>
+                    <tr class="border-b border-border-color hover:bg-hover-color">
+                        <td class="p-3"><%= u.username %> <%= u.isAdmin ? '<span class="badge badge-admin">Admin</span>' : '' %></td>
+                        <td class="p-3"><%= u.email %></td>
+                        <td class="p-3 capitalize"><%= u.plan %></td>
+                        <td class="p-3 text-xs font-mono"><%= u.apiKey ? u.apiKey.substring(0, 15) + '...' : 'N/A' %></td>
+                        <td class="p-3">
+                            <% if (u.isSuspended) { %> <span class="badge badge-danger">Suspended</span> <% } else { %> <span class="badge badge-success">Aktif</span> <% } %>
+                        </td>
+                        <td class="p-3 text-sm"><%= new Date(u.createdAt).toLocaleDateString('id-ID') %></td>
+                        <td class="p-3 whitespace-nowrap">
+                            <a href="/admin/user/<%= u._id %>" class="btn btn-icon btn-sm btn-info" title="Lihat Detail"><i class="fas fa-eye"></i></a>
+                            <% if (!u.isAdmin) { %>
+                                <% if (u.isSuspended) { %>
+                                    <form action="/admin/user/<%= u._id %>/unsuspend" method="POST" class="inline">
+                                        <button type="submit" class="btn btn-icon btn-sm btn-success" title="Aktifkan"><i class="fas fa-check-circle"></i></button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/admin/user/<%= u._id %>/suspend" method="POST" class="inline">
+                                        <button type="submit" class="btn btn-icon btn-sm btn-danger" title="Suspend" onclick="return confirm('Yakin ingin suspend user ini?')"><i class="fas fa-ban"></i></button>
+                                    </form>
+                                <% } %>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                    <% if (users.length === 0) { %>
+                        <tr><td colspan="7" class="p-4 text-center">Tidak ada pengguna ditemukan.</td></tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <% if (totalPages > 1) { %>
+        <div class="mt-6 flex justify-center items-center space-x-2">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&search=<%= searchQuery %>" class="btn btn-outline-secondary btn-sm">« Sebelumnya</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <% if (i === currentPage) { %>
+                    <span class="btn btn-primary btn-sm disabled"><%= i %></span>
+                <% } else if (i <= 2 || i >= totalPages - 1 || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
+                    <a href="?page=<%= i %>&limit=<%= limit %>&search=<%= searchQuery %>" class="btn btn-outline-secondary btn-sm"><%= i %></a>
+                <% } else if (i === 3 && currentPage > 3) { %>
+                    <span class="px-2">...</span>
+                <% } else if (i === totalPages - 2 && currentPage < totalPages - 2) { %>
+                    <span class="px-2">...</span>
+                <% } %>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&search=<%= searchQuery %>" class="btn btn-outline-secondary btn-sm">Berikutnya »</a>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+<%- include('../partials/admin-footer') %>

@@ -1,0 +1,73 @@
+<%- include('./partials/header', { title: title || 'Terjadi Kesalahan' }) %>
+
+<style>
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+        padding: 2rem;
+    }
+    .error-status-code {
+        font-size: 5rem;
+        font-weight: bold;
+        color: var(--accent-color, #FF00E6);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    .error-message {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    html[data-theme='dark'] .error-message { color: var(--text-light); }
+    html[data-theme='light'] .error-message { color: var(--text-dark); }
+
+    .error-detail {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        white-space: pre-wrap; /* Untuk menampilkan stack trace dengan benar */
+        word-break: break-all;
+    }
+    html[data-theme='dark'] .error-detail { color: var(--text-light); }
+    html[data-theme='light'] .error-detail { color: var(--text-dark); }
+
+    .error-actions a {
+        margin: 0 0.5rem;
+    }
+</style>
+
+<div class="error-container">
+    <% if (typeof statusCode !== 'undefined' && statusCode) { %>
+        <div class="error-status-code"><%= statusCode %></div>
+    <% } else { %>
+        <div class="error-status-code"><i class="fas fa-exclamation-triangle"></i></div>
+    <% } %>
+
+    <h1 class="error-message">
+        <%= message || 'Oops! Terjadi sesuatu yang tidak beres.' %>
+    </h1>
+
+    <% if (typeof errorDetail !== 'undefined' && errorDetail) { %>
+        <p class="error-detail">
+            <%= errorDetail %>
+        </p>
+    <% } %>
+
+    <div class="error-actions">
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-home mr-2"></i> Kembali ke Home
+        </a>
+        <% if (user && currentPath !== '/dashboard') { %>
+            <a href="/dashboard" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt mr-2"></i> Ke Dashboard
+            </a>
+        <% } %>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

@@ -1,0 +1,153 @@
+<%- include('./partials/header', { title: title || 'Paket & Harga' }) %>
+
+<div class="pricing-page-container">
+    <div class="pricing-header">
+        <h1><i class="fas fa-tags mr-3 text-color-accent"></i> Paket & Harga API</h1>
+        <p>Pilih paket yang paling sesuai dengan kebutuhan proyek Anda.</p>
+    </div>
+
+    <div class="period-toggle-group">
+        <button type="button" class="period-toggle-btn active" data-period="monthly">Bulanan</button>
+        <button type="button" class="period-toggle-btn" data-period="yearly">Tahunan <span style="font-size: 0.7em; background-color: var(--pricing-success-color); color: white; padding: 0.1em 0.4em; border-radius: 0.25rem; margin-left: 0.25em;">Hemat!</span></button>
+        <button type="button" class="period-toggle-btn" data-period="lifetime">Sekali Bayar</button>
+    </div>
+
+    <div class="pricing-grid">
+        <div class="pricing-card" data-plan-card="free">
+            <div class="pricing-card-header">
+                <i class="fas fa-rocket text-color-info"></i>
+                <h3>Gratis</h3>
+                <p class="plan-description">Untuk memulai & proyek personal.</p>
+            </div>
+            <div class="price-display">
+                <div class="price-value" data-plan="free">Rp 0</div>
+                <div class="price-period" data-plan="free">/bulan</div>
+            </div>
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle feature-icon-success"></i> 1.000 Request/hari</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Akses endpoint dasar</li>
+                <li><i class="fas fa-times-circle feature-icon-error"></i> Dukungan Komunitas</li>
+                <li><i class="fas fa-times-circle feature-icon-error"></i> Tanpa SLA</li>
+            </ul>
+            <form action="/payment/checkout" method="POST" class="mt-auto">
+                 <input type="hidden" name="plan" value="free">
+                 <input type="hidden" name="period" value="monthly" class="plan-period-input">
+                 <button type="submit" class="pricing-action-btn btn-outline-pricing" <%= user && user.plan === 'free' ? 'disabled' : '' %> >
+                    <%= user && user.plan === 'free' ? 'Sedang Digunakan' : 'Mulai Gratis' %>
+                 </button>
+            </form>
+        </div>
+
+        <div class="pricing-card popular" data-plan-card="pro">
+            <div class="popular-badge">Populer</div>
+            <div class="pricing-card-header">
+                <i class="fas fa-gem text-color-accent"></i>
+                <h3>Pro</h3>
+                <p class="plan-description">Untuk developer & bisnis kecil.</p>
+            </div>
+            <div class="price-display">
+                <div class="price-value" data-plan="pro">Rp 75K</div>
+                <div class="price-period" data-plan="pro">/bulan</div>
+            </div>
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle feature-icon-success"></i> 50.000 Request/hari</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Akses semua endpoint</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Dukungan Email Prioritas</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> SLA 99.9% Uptime</li>
+            </ul>
+             <form action="/payment/checkout" method="POST" class="mt-auto">
+                 <input type="hidden" name="plan" value="pro">
+                 <input type="hidden" name="period" value="monthly" class="plan-period-input">
+                 <button type="submit" class="pricing-action-btn btn-primary-pricing" <%= user && user.plan === 'pro' ? 'disabled' : '' %>>
+                    <%= user && user.plan === 'pro' ? 'Sedang Digunakan' : 'Pilih Pro' %>
+                 </button>
+            </form>
+        </div>
+
+        <div class="pricing-card" data-plan-card="enterprise">
+            <div class="pricing-card-header">
+                <i class="fas fa-crown text-color-warning"></i>
+                <h3>Enterprise</h3>
+                <p class="plan-description">Skala besar & kebutuhan khusus.</p>
+            </div>
+            <div class="price-display">
+                <div class="price-value" data-plan="enterprise">Hubungi Kami</div>
+                <div class="price-period" data-plan="enterprise"></div>
+            </div>
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Request Kustom & Tidak Terbatas</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Akses semua endpoint + beta</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> Dukungan Dedikasi 24/7</li>
+                <li><i class="fas fa-check-circle feature-icon-success"></i> SLA Kustom & Jaminan</li>
+            </ul>
+            <a href="/contact-sales" class="pricing-action-btn btn-accent-pricing mt-auto">Hubungi Sales</a>
+        </div>
+    </div>
+    <p style="text-align: center; font-size: 0.875rem; opacity: 0.7; margin-top: 2.5rem;">Pembayaran aman melalui DANA, QRIS, dan metode lainnya.</p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const periodToggleButtons = document.querySelectorAll('.period-toggle-btn');
+    const priceValueElements = document.querySelectorAll('.price-value[data-plan]');
+    const pricePeriodElements = document.querySelectorAll('.price-period[data-plan]');
+    const planCards = document.querySelectorAll('.pricing-card[data-plan-card]');
+
+    const prices = {
+        free: {
+            monthly: { value: 'Rp 0', periodText: '/bulan', amount: 0 },
+            yearly: { value: 'Rp 0', periodText: '/tahun', amount: 0 },
+            lifetime: { value: 'Rp 0', periodText: 'Sekali Bayar', amount: 0 }
+        },
+        pro: {
+            monthly: { value: 'Rp 75K', periodText: '/bulan', amount: 75000 },
+            yearly: { value: 'Rp 720K', periodText: '/tahun (Hemat 20%)', amount: 720000 },
+            lifetime: { value: 'Rp 1.5JT', periodText: 'Sekali Bayar', amount: 1500000 }
+        },
+        enterprise: {
+            monthly: { value: 'Hubungi Kami', periodText: '', amount: null },
+            yearly: { value: 'Hubungi Kami', periodText: '', amount: null },
+            lifetime: { value: 'Hubungi Kami', periodText: '', amount: null }
+        }
+    };
+
+    function updateAllPrices(selectedPeriod) {
+        priceValueElements.forEach(el => {
+            const plan = el.dataset.plan;
+            if (prices[plan] && prices[plan][selectedPeriod]) {
+                el.textContent = prices[plan][selectedPeriod].value;
+            }
+        });
+
+        pricePeriodElements.forEach(el => {
+            const plan = el.dataset.plan;
+            if (prices[plan] && prices[plan][selectedPeriod]) {
+                el.textContent = prices[plan][selectedPeriod].periodText;
+            }
+        });
+
+        planCards.forEach(card => {
+            const plan = card.dataset.planCard;
+            const form = card.querySelector('form');
+            if (form) {
+                const periodInput = form.querySelector('input[name="period"]');
+                if (periodInput) {
+                    periodInput.value = selectedPeriod;
+                }
+            }
+        });
+    }
+
+    periodToggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            periodToggleButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const selectedPeriod = button.dataset.period;
+            updateAllPrices(selectedPeriod);
+        });
+    });
+    updateAllPrices('monthly');
+});
+</script>
+
+<%- include('./partials/footer') %>

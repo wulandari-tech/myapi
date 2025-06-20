@@ -1,0 +1,255 @@
+<%- include('../partials/header', { title: title || 'Live Chat Admin' }) %>
+
+<style>
+.admin-chat-layout { display: flex; height: calc(100vh - 150px); gap: 1rem; }
+.chat-session-list { width: 300px; border-right: 1px solid; overflow-y: auto; padding-right: 1rem; }
+html[data-theme='dark'] .chat-session-list { border-color: var(--border-dark); }
+html[data-theme='light'] .chat-session-list { border-color: var(--border-light); }
+
+.chat-session-item { padding: 0.75rem; border-bottom: 1px solid; cursor: pointer; border-radius: 0.25rem; margin-bottom: 0.5rem; position: relative; }
+html[data-theme='dark'] .chat-session-item { border-color: var(--border-darker, #3a3a60); } /* Warna border lebih gelap sedikit */
+html[data-theme='light'] .chat-session-item { border-color: var(--border-lighter, #e0e0e0); }
+html[data-theme='dark'] .chat-session-item:hover { background-color: var(--card-dark); }
+html[data-theme='light'] .chat-session-item:hover { background-color: #f0f0f0; }
+.chat-session-item.active { background-color: var(--primary-color) !important; color: var(--text-light) !important; }
+.chat-session-item .unread-badge {
+    position: absolute; right: 0.5rem; top: 0.5rem; background-color: var(--accent-color);
+    color: white; font-size: 0.7em; padding: 0.1em 0.4em; border-radius: 50%;
+    min-width: 18px; text-align: center; line-height: 1.5;
+}
+
+.admin-chat-main { flex-grow: 1; display: flex; flex-direction: column; }
+.admin-chat-box { flex-grow: 1; padding: 1rem; overflow-y: auto; border-radius: 0.5rem 0.5rem 0 0; }
+html[data-theme='dark'] .admin-chat-box { background-color: var(--card-dark); border: 1px solid var(--border-dark); }
+html[data-theme='light'] .admin-chat-box { background-color: var(--card-light); border: 1px solid var(--border-light); }
+
+.chat-message { margin-bottom: 0.75rem; padding: 0.5rem 1rem; border-radius: 0.5rem; max-width: 80%; word-wrap: break-word; }
+.chat-message.user { background-color: var(--accent-color); color: var(--text-light); margin-left: auto; border-bottom-right-radius: 0; }
+.chat-message.admin { background-color: var(--primary-color); color: var(--text-light); margin-right: auto; border-bottom-left-radius: 0; }
+html[data-theme='light'] .chat-message.user { background-color: var(--accent-color); color: var(--text-light); }
+html[data-theme='light'] .chat-message.admin { background-color: var(--primary-color); color: var(--text-light); }
+
+
+.admin-chat-input-area { display: flex; padding: 1rem; }
+html[data-theme='dark'] .admin-chat-input-area { background-color: var(--card-dark); border-top: 1px solid var(--border-dark); }
+html[data-theme='light'] .admin-chat-input-area { background-color: var(--card-light); border-top: 1px solid var(--border-light); }
+#adminChatMessageInput { flex-grow: 1; padding: 0.75rem; border-radius: 0.375rem 0 0 0.375rem; border: 1px solid; margin-right: -1px;}
+html[data-theme='dark'] #adminChatMessageInput { background-color: var(--bg-dark-secondary); border-color: var(--border-dark); color: var(--text-light); }
+html[data-theme='light'] #adminChatMessageInput { background-color: var(--bg-light-secondary); border-color: var(--border-light); color: var(--text-dark); }
+
+#adminSendChatMessageBtn { padding: 0.75rem 1.5rem; border-radius: 0 0.375rem 0.375rem 0; }
+.chat-actions { margin-top: 0.5rem; text-align: right; }
+.no-chat-selected { display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; opacity: 0.7; }
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6"><i class="fas fa-headset mr-2"></i> Live Chat Support</h1>
+
+    <div class="admin-chat-layout">
+        <div class="chat-session-list" id="chatSessionList">
+            <p class="text-center opacity-70 p-4">Tidak ada sesi chat aktif.</p>
+        </div>
+
+        <div class="admin-chat-main">
+            <div id="adminChatBoxContainer" class="hidden">
+                <div class="flex justify-between items-center mb-2 p-2 rounded" style="background-color: var(--card-darker, #252540);">
+                     <h3 class="text-lg font-semibold" id="activeChatUserName">Pilih Sesi Chat</h3>
+                     <button id="closeChatBtn" class="btn btn-sm btn-danger hidden"><i class="fas fa-times-circle mr-1"></i> Tutup Chat</button>
+                </div>
+                <div id="adminChatBox" class="admin-chat-box">
+                    <p class="no-chat-selected">Pilih sesi chat dari daftar di sebelah kiri untuk memulai.</p>
+                </div>
+                <form id="adminChatInputForm" class="admin-chat-input-area hidden">
+                    <input type="text" id="adminChatMessageInput" class="form-input" placeholder="Ketik balasan Anda..." autocomplete="off" required>
+                    <button type="submit" id="adminSendChatMessageBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+             <div id="noChatSelectedMessage" class="no-chat-selected admin-chat-box">
+                <p class="text-xl"><i class="fas fa-comments fa-2x mb-3 block"></i><br>Pilih sesi chat dari daftar di sebelah kiri.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = io();
+    const chatSessionList = document.getElementById('chatSessionList');
+    const adminChatBoxContainer = document.getElementById('adminChatBoxContainer');
+    const adminChatBox = document.getElementById('adminChatBox');
+    const adminChatInputForm = document.getElementById('adminChatInputForm');
+    const adminChatMessageInput = document.getElementById('adminChatMessageInput');
+    const activeChatUserNameElement = document.getElementById('activeChatUserName');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const noChatSelectedMessage = document.getElementById('noChatSelectedMessage');
+
+    let currentOpenChatUserId = null;
+    let activeChatSessions = {}; // { userId: { name: '...', messages: [], unread: 0 } }
+
+    function appendAdminMessage(message, targetUserId) {
+        if (currentOpenChatUserId !== targetUserId && message.sender !== 'system') return; // Hanya tampilkan jika chatnya sedang dibuka
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', message.sender);
+        messageElement.textContent = message.text;
+        if (message.timestamp) {
+            const timeElement = document.createElement('span');
+            timeElement.style.fontSize = '0.7em'; timeElement.style.opacity = '0.7'; timeElement.style.display = 'block'; timeElement.style.marginTop = '0.25em';
+            timeElement.textContent = new Date(message.timestamp).toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'});
+            messageElement.appendChild(timeElement);
+        }
+        adminChatBox.appendChild(messageElement);
+        adminChatBox.scrollTop = adminChatBox.scrollHeight;
+    }
+    
+    function renderChatSessionList() {
+        chatSessionList.innerHTML = '';
+        const sortedSessions = Object.values(activeChatSessions).sort((a, b) => (b.lastMessageTime || 0) - (a.lastMessageTime || 0));
+
+        if (sortedSessions.length === 0) {
+            chatSessionList.innerHTML = '<p class="text-center opacity-70 p-4">Tidak ada sesi chat aktif.</p>';
+            return;
+        }
+
+        sortedSessions.forEach(session => {
+            if (session.status === 'closed') return; // Jangan tampilkan yang sudah ditutup
+            const sessionItem = document.createElement('div');
+            sessionItem.classList.add('chat-session-item');
+            sessionItem.dataset.userId = session.userId;
+            sessionItem.textContent = session.name || `User ${session.userId.slice(-4)}`;
+            if (session.userId === currentOpenChatUserId) {
+                sessionItem.classList.add('active');
+            }
+            if (session.unreadByAdmin && session.unreadByAdmin > 0) {
+                const unreadBadge = document.createElement('span');
+                unreadBadge.classList.add('unread-badge');
+                unreadBadge.textContent = session.unreadByAdmin;
+                sessionItem.appendChild(unreadBadge);
+            }
+
+            sessionItem.addEventListener('click', () => {
+                openChatSession(session.userId);
+            });
+            chatSessionList.appendChild(sessionItem);
+        });
+    }
+
+    function openChatSession(userId) {
+        if (currentOpenChatUserId === userId && !adminChatBoxContainer.classList.contains('hidden')) return; // Sudah terbuka
+
+        currentOpenChatUserId = userId;
+        const session = activeChatSessions[userId];
+        if (!session) return;
+
+        adminChatBox.innerHTML = '';
+        session.messages.forEach(msg => appendAdminMessage(msg, userId));
+        activeChatUserNameElement.textContent = `Chat dengan ${session.name || 'User'}`;
+        
+        adminChatBoxContainer.classList.remove('hidden');
+        adminChatInputForm.classList.remove('hidden');
+        closeChatBtn.classList.remove('hidden');
+        noChatSelectedMessage.classList.add('hidden');
+        adminChatMessageInput.focus();
+        
+        // Tandai sudah dibaca
+        if (session.unreadByAdmin > 0) {
+            socket.emit('adminMarkAsRead', userId);
+            session.unreadByAdmin = 0; // Update lokal juga
+        }
+        renderChatSessionList(); // Update UI list
+    }
+
+    adminChatInputForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = adminChatMessageInput.value.trim();
+        if (text && currentOpenChatUserId) {
+            socket.emit('adminSendMessage', { userId: currentOpenChatUserId, text: text });
+            appendAdminMessage({ sender: 'admin', text: text, timestamp: new Date() }, currentOpenChatUserId);
+            activeChatSessions[currentOpenChatUserId].messages.push({sender:'admin', text:text, timestamp: new Date()});
+            activeChatSessions[currentOpenChatUserId].lastMessageTime = new Date().getTime();
+            adminChatMessageInput.value = '';
+            renderChatSessionList(); // Re-render untuk update urutan
+        }
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+        if (currentOpenChatUserId && confirm(`Apakah Anda yakin ingin menutup chat dengan ${activeChatSessions[currentOpenChatUserId]?.name || 'user ini'}?`)) {
+            socket.emit('adminCloseChat', currentOpenChatUserId);
+            // Di server, activeChats[currentOpenChatUserId] akan ditandai closed atau dihapus
+        }
+    });
+
+    socket.emit('adminJoin');
+
+    socket.on('activeChatsUpdate', (chats) => { // Daftar chat awal saat admin join
+        activeChatSessions = {};
+        chats.forEach(chat => {
+            activeChatSessions[chat.userId] = { ...chat, messages: [], unreadByAdmin: chat.unread || 0, lastMessageTime: new Date().getTime() };
+        });
+        renderChatSessionList();
+    });
+
+    socket.on('newChatSession', (sessionData) => {
+        if (!activeChatSessions[sessionData.userId]) {
+            activeChatSessions[sessionData.userId] = {
+                userId: sessionData.userId,
+                name: sessionData.name,
+                messages: sessionData.messages || [],
+                unreadByAdmin: sessionData.messages ? sessionData.messages.length : 1, // Asumsi semua pesan awal belum dibaca
+                lastMessageTime: new Date().getTime()
+            };
+        } else {
+             activeChatSessions[sessionData.userId].name = sessionData.name; // Update nama jika berubah
+             activeChatSessions[sessionData.userId].messages = sessionData.messages || activeChatSessions[sessionData.userId].messages;
+        }
+        renderChatSessionList();
+    });
+
+    socket.on('newMessage', (data) => { // Pesan dari user
+        if (activeChatSessions[data.userId]) {
+            activeChatSessions[data.userId].messages.push(data.message);
+            activeChatSessions[data.userId].lastMessageTime = new Date(data.message.timestamp).getTime();
+            if (data.userId !== currentOpenChatUserId) {
+                activeChatSessions[data.userId].unreadByAdmin = (activeChatSessions[data.userId].unreadByAdmin || 0) + 1;
+            } else {
+                 socket.emit('adminMarkAsRead', data.userId); // Otomatis read jika chatnya sedang terbuka
+                 activeChatSessions[data.userId].unreadByAdmin = 0;
+            }
+            appendAdminMessage(data.message, data.userId);
+        } else { // Chat baru dari user yang belum ada di list admin (misal admin baru join)
+             activeChatSessions[data.userId] = { userId: data.userId, name: data.name, messages: [data.message], unreadByAdmin: 1, lastMessageTime: new Date(data.message.timestamp).getTime() };
+        }
+        renderChatSessionList();
+    });
+    
+    socket.on('chatSessionUpdated', (data) => { // Dipanggil saat admin lain membalas/membaca
+        if (activeChatSessions[data.userId]) {
+            activeChatSessions[data.userId].messages = data.messages;
+            activeChatSessions[data.userId].unreadByAdmin = data.unreadByAdmin;
+            if (data.userId === currentOpenChatUserId) { // Jika chat ini sedang dibuka, refresh messagenya
+                adminChatBox.innerHTML = '';
+                data.messages.forEach(msg => appendAdminMessage(msg, data.userId));
+            }
+            renderChatSessionList();
+        }
+    });
+
+    socket.on('chatSessionClosed', (data) => {
+        if (activeChatSessions[data.userId]) {
+            activeChatSessions[data.userId].status = 'closed_by_admin';
+            // delete activeChatSessions[data.userId]; // Atau tandai saja
+            if (currentOpenChatUserId === data.userId) {
+                adminChatBoxContainer.classList.add('hidden');
+                adminChatInputForm.classList.add('hidden');
+                closeChatBtn.classList.add('hidden');
+                noChatSelectedMessage.classList.remove('hidden');
+                activeChatUserNameElement.textContent = 'Pilih Sesi Chat';
+                currentOpenChatUserId = null;
+            }
+            renderChatSessionList();
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

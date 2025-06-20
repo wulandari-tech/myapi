@@ -1,0 +1,28 @@
+<%- include('../partials/header', { title: title }) %>
+<style>
+    .failed-container { max-width: 600px; margin: 2rem auto; padding: 2rem; text-align: center; }
+    html[data-theme='dark'] .failed-container { background-color: var(--card-dark); border-radius: 0.5rem; }
+    html[data-theme='light'] .failed-container { background-color: var(--card-light); border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
+    .failed-icon { font-size: 4rem; color: var(--error-color); margin-bottom: 1rem; }
+</style>
+
+<div class="failed-container">
+    <i class="fas fa-times-circle failed-icon"></i>
+    <h2>Pembayaran Gagal atau Kedaluwarsa</h2>
+    <p class="mt-2">Maaf, <%= transaction.userId.username %>, pembayaran Anda untuk paket <strong><%= transaction.plan.toUpperCase() %> (<%= transaction.period %>)</strong> tidak dapat diproses atau waktu pembayaran telah habis.</p>
+    <p>Status: <strong class="capitalize"><%= transaction.status %></strong></p>
+    <p>ID Transaksi: <%= transaction.orkutReffId %></p>
+
+    <% if (transaction.status === 'expired') { %>
+        <p class="mt-4">Waktu untuk menyelesaikan pembayaran telah habis.</p>
+    <% } else { %>
+        <p class="mt-4">Silakan coba lagi atau hubungi dukungan jika masalah berlanjut.</p>
+    <% } %>
+
+    <div class="mt-6 space-x-4">
+        <a href="/pricing" class="btn btn-primary">Coba Lagi dengan Paket Lain</a>
+        <a href="/dashboard" class="btn btn-outline-light">Kembali ke Dashboard</a>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,75 @@
+    </main>
+    <footer style="background-color: #2C2C54; color: #F5F5F5; padding: 1.5rem; text-align: center;">
+        <p>© <%= new Date().getFullYear() %> Wanzofc API. Dibuat dengan <i class="fas fa-heart" style="color: #FF00E6;"></i>.</p>
+        <div style="margin-top: 0.5rem;">
+            <a href="https://github.com/wanzcode" target="_blank" rel="noopener noreferrer" style="color: inherit; margin-left: 0.5rem; margin-right: 0.5rem; text-decoration: none;" aria-label="GitHub"><i class="fab fa-github" style="font-size: 1.25rem;"></i></a>
+            <a href="https://instagram.com/wanxpreset" target="_blank" rel="noopener noreferrer" style="color: inherit; margin-left: 0.5rem; margin-right: 0.5rem; text-decoration: none;" aria-label="Instagram"><i class="fab fa-instagram" style="font-size: 1.25rem;"></i></a>
+        </div>
+    </footer>
+
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleDesktop = document.getElementById('theme-toggle-desktop');
+    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+    const htmlElement = document.documentElement;
+
+    const applyTheme = (theme) => {
+        htmlElement.setAttribute('data-theme', theme);
+        localStorage.setItem('wanzofc_theme', theme);
+        const iconClassAdd = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+        const iconClassRemove = theme === 'dark' ? 'fa-moon' : 'fa-sun';
+
+        if (themeToggleDesktop) {
+            const iconDesktop = themeToggleDesktop.querySelector('i');
+            if (iconDesktop) {
+                iconDesktop.classList.remove(iconClassRemove);
+                iconDesktop.classList.add(iconClassAdd);
+            }
+        }
+        if (themeToggleMobile) {
+            const iconMobile = themeToggleMobile.querySelector('i');
+             if (iconMobile) {
+                iconMobile.classList.remove(iconClassRemove);
+                iconMobile.classList.add(iconClassAdd);
+            }
+        }
+    };
+
+    const savedTheme = localStorage.getItem('wanzofc_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    const handleThemeToggle = () => {
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    };
+
+    if (themeToggleDesktop) themeToggleDesktop.addEventListener('click', handleThemeToggle);
+    if (themeToggleMobile) themeToggleMobile.addEventListener('click', handleThemeToggle);
+
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+    const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+    if (mobileMenuButton && mobileMenuDrawer && closeMobileMenuButton && mobileMenuOverlay) {
+        const openMenu = () => {
+            if (mobileMenuOverlay) mobileMenuOverlay.style.display = 'block';
+            if (mobileMenuDrawer) mobileMenuDrawer.style.transform = 'translateX(0%)';
+            document.body.style.overflow = 'hidden';
+        };
+        const closeMenu = () => {
+            if (mobileMenuDrawer) mobileMenuDrawer.style.transform = 'translateX(100%)';
+            if (mobileMenuOverlay) mobileMenuOverlay.style.display = 'none';
+            document.body.style.overflow = '';
+        };
+
+        mobileMenuButton.addEventListener('click', openMenu);
+        closeMobileMenuButton.addEventListener('click', closeMenu);
+        mobileMenuOverlay.addEventListener('click', closeMenu);
+    }
+});
+</script>
+</body>
+</html>

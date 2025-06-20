@@ -1,0 +1,15 @@
+<%- include('../partials/admin-header', { title: title, user: user }) %>
+<div class="admin-content-container p-6">
+    <h1 class="text-2xl font-semibold mb-6">Log Permintaan API</h1>
+    <div class="admin-card">
+        <div class="admin-card-body">
+            <p>Fitur Log API akan segera tersedia. Ini akan menampilkan semua permintaan yang masuk ke API Anda.</p>
+            <% if (logs && logs.length > 0) { %>
+                <table></table>
+            <% } else { %>
+                <p>Belum ada log.</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+<%- include('../partials/admin-footer') %>

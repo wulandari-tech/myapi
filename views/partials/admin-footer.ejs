@@ -1,0 +1,27 @@
+        </main>
+    </div>
+    <script src="/socket.io/socket.io.js"></script> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleAdmin = document.getElementById('theme-toggle-admin');
+            if (themeToggleAdmin) {
+                const htmlEl = document.documentElement;
+                const currentTheme = localStorage.getItem('wanzofc_theme') || (htmlEl.getAttribute('data-theme') || 'dark');
+                htmlEl.setAttribute('data-theme', currentTheme);
+                const icon = themeToggleAdmin.querySelector('i');
+                if (icon) {
+                    icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                }
+
+                themeToggleAdmin.addEventListener('click', () => {
+                    const newTheme = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    htmlEl.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('wanzofc_theme', newTheme);
+                    if (icon) {
+                        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

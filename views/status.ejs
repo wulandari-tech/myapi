@@ -1,0 +1,64 @@
+<%- include('./partials/header', { title: title }) %>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-center text-text-light mb-8">
+        <i class="fas fa-server mr-3 text-accent-color"></i> Status Layanan API
+    </h1>
+
+    <div id="status-container" class="space-y-6">
+        <% if (serverStatus) { %>
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <span>Status Umum Wanzofc API</span>
+                    <% if (serverStatus.status === 'operational') { %>
+                        <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i> Operasional</span>
+                    <% } else if (serverStatus.status === 'degraded_performance') { %>
+                        <span class="badge badge-warning"><i class="fas fa-exclamation-triangle mr-1"></i> Performa Menurun</span>
+                    <% } else { %>
+                        <span class="badge badge-error"><i class="fas fa-times-circle mr-1"></i> Gangguan</span>
+                    <% } %>
+                </div>
+                <div class="card-body">
+                    <p class="text-lg"><%= serverStatus.message %></p>
+                    <p class="text-sm text-gray-400 mt-2">Update terakhir: <span id="last-updated"><%= new Date(serverStatus.timestamp).toLocaleString('id-ID') %></span></p>
+                    <p class="text-sm text-gray-400">Koneksi Aktif (Contoh): <span id="active-connections"><%= serverStatus.activeConnections || 'N/A' %></span></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Detail Status Komponen</div>
+                <div class="card-body space-y-3">
+                    <div class="flex justify-between items-center p-3 rounded-md bg-bg-dark">
+                        <span><i class="fas fa-network-wired mr-2"></i> Server Utama API</span>
+                        <span class="badge badge-success">Operasional</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-md bg-bg-dark">
+                        <span><i class="fas fa-database mr-2"></i> Database</span>
+                        <span class="badge badge-success">Operasional</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-md bg-bg-dark">
+                        <span><i class="fas fa-key mr-2"></i> Layanan Autentikasi</span>
+                        <span class="badge badge-success">Operasional</span>
+                    </div>
+                     <div class="flex justify-between items-center p-3 rounded-md bg-bg-dark">
+                        <span><i class="fas fa-shield-alt mr-2"></i> Sistem Pembayaran (Premium)</span>
+                        <span class="badge badge-warning">Dalam Perbaikan</span>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="card">
+                <div class="card-body text-center">
+                    <p class="text-xl">Gagal memuat status server. Coba lagi nanti.</p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+    <div class="text-center mt-8">
+        <button id="refresh-status-btn" class="btn btn-secondary">
+            <i class="fas fa-sync-alt mr-2"></i> Segarkan Status
+        </button>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

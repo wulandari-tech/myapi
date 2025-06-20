@@ -1,0 +1,97 @@
+<%- include('../partials/admin-header', { title: title, user: user }) %>
+
+<div class="admin-content-container p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold">Detail Pengguna: <%= targetUser.username %></h1>
+        <a href="/admin/users" class="btn btn-outline-secondary"><i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 admin-card">
+            <div class="admin-card-header">Informasi Akun</div>
+            <div class="admin-card-body space-y-2">
+                <p><strong>Username:</strong> <%= targetUser.username %></p>
+                <p><strong>Email:</strong> <%= targetUser.email %></p>
+                <p><strong>User ID:</strong> <%= targetUser._id %></p>
+                <p><strong>API Key:</strong> <code class="text-xs font-mono bg-gray-700 p-1 rounded"><%= targetUser.apiKey || 'N/A' %></code></p>
+                <p><strong>Bergabung:</strong> <%= new Date(targetUser.createdAt).toLocaleString('id-ID') %></p>
+                <p><strong>Status:</strong>
+                    <% if (targetUser.isSuspended) { %> <span class="badge badge-danger">Suspended</span> <% } else { %> <span class="badge badge-success">Aktif</span> <% } %>
+                    <% if (targetUser.isAdmin) { %> <span class="badge badge-admin ml-2">Admin</span> <% } %>
+                </p>
+                 <% if (!targetUser.isAdmin && !targetUser._id.equals(user._id)) { %>
+                    <div class="mt-4">
+                        <% if (targetUser.isSuspended) { %>
+                            <form action="/admin/user/<%= targetUser._id %>/unsuspend" method="POST">
+                                <button type="submit" class="btn btn-success w-full"><i class="fas fa-check-circle mr-2"></i> Aktifkan Akun</button>
+                            </form>
+                        <% } else { %>
+                            <form action="/admin/user/<%= targetUser._id %>/suspend" method="POST">
+                                <button type="submit" class="btn btn-danger w-full" onclick="return confirm('Yakin ingin suspend user ini?')"><i class="fas fa-ban mr-2"></i> Suspend Akun</button>
+                            </form>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 admin-card">
+            <div class="admin-card-header">Paket & Kuota</div>
+            <div class="admin-card-body">
+                <form action="/admin/user/<%= targetUser._id %>/update-plan-quota" method="POST">
+                    <div class="form-group mb-4">
+                        <label for="plan" class="block text-sm font-medium">Paket:</label>
+                        <select name="plan" id="plan" class="form-input w-full">
+                            <option value="free" <%= targetUser.plan === 'free' ? 'selected' : '' %>>Gratis</option>
+                            <option value="pro" <%= targetUser.plan === 'pro' ? 'selected' : '' %>>Pro</option>
+                            <option value="enterprise" <%= targetUser.plan === 'enterprise' ? 'selected' : '' %>>Enterprise</option>
+                            <option value="lifetime_pro" <%= targetUser.plan === 'lifetime_pro' ? 'selected' : '' %>>Lifetime Pro</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label for="customQuotaRequests" class="block text-sm font-medium">Kuota Request:</label>
+                            <input type="number" name="customQuotaRequests" id="customQuotaRequests" value="<%= targetUser.quota.requests %>" class="form-input w-full" placeholder="Default Plan">
+                        </div>
+                        <div class="form-group">
+                            <label for="customQuotaPeriod" class="block text-sm font-medium">Periode Kuota:</label>
+                            <select name="customQuotaPeriod" id="customQuotaPeriod" class="form-input w-full">
+                                <option value="daily" <%= targetUser.quota.period === 'daily' ? 'selected' : '' %>>Harian</option>
+                                <option value="monthly" <%= targetUser.quota.period === 'monthly' ? 'selected' : '' %>>Bulanan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="subscriptionEndsAt" class="block text-sm font-medium">Langganan Berakhir Pada (Kosongkan jika Lifetime atau Free):</label>
+                        <input type="date" name="subscriptionEndsAt" id="subscriptionEndsAt" value="<%= targetUser.subscriptionEndsAt ? new Date(targetUser.subscriptionEndsAt).toISOString().split('T')[0] : '' %>" class="form-input w-full">
+                    </div>
+                     <div class="form-group mb-4">
+                        <input type="checkbox" name="isLifetime" id="isLifetime" class="form-checkbox" <%= targetUser.isLifetime ? 'checked' : '' %>>
+                        <label for="isLifetime" class="ml-2 text-sm font-medium">Jadikan Langganan Lifetime</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Simpan Perubahan Paket</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card mt-6">
+        <div class="admin-card-header">Riwayat Transaksi Pengguna (Terbaru)</div>
+        <div class="admin-card-body">
+            <% if (userTransactions && userTransactions.length > 0) { %>
+                 <ul class="divide-y divide-border-color">
+                    <% userTransactions.forEach(tx => { %>
+                        <li class="py-2">
+                            <p><strong>ID:</strong> <%= tx.orkutReffId %> | <strong>Status:</strong> <span class="badge badge-<%= tx.status %>"><%= tx.status %></span></p>
+                            <p><strong>Jumlah:</strong> Rp <%= tx.amountToPay.toLocaleString('id-ID') %> | <strong>Metode:</strong> <%= tx.paymentMethod %></p>
+                            <p class="text-xs opacity-70">Tanggal: <%= new Date(tx.createdAt).toLocaleString('id-ID') %></p>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>Tidak ada riwayat transaksi untuk pengguna ini.</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+<%- include('../partials/admin-footer') %>
